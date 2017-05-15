@@ -1,6 +1,5 @@
 package com.projects.taxiservice.Users.Driver;
 
-import javax.persistence.Embeddable;
 
 /**
  * Created by O'Neill on 6/30/2016.
@@ -12,8 +11,8 @@ carNumber - represents the plate number on the car
 carDescription - short and specific description of the car(color, model, special features)
 carClass - one of three classes of cars represented by the firm. Regular, FamilySize, VipClass
  */
-@Embeddable //@Embedded - for marking the variable. Works the same as @Embeddable
 public class Car {
+    private int id;
     private String carNumber;
     private String carDescription;
     private CarClass carClass;

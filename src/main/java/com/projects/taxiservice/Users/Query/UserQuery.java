@@ -1,18 +1,16 @@
 package com.projects.taxiservice.Users.Query;
 
 import com.projects.taxiservice.DBLogic.DBManageable;
+import com.projects.taxiservice.Users.Customer.User;
 import com.projects.taxiservice.Users.Driver.CarClass;
 
 /**
  * Created by O'Neill on 7/3/2016.
  */
 
-/*
-Class UserQuery contains all provided information from customer. name - customer's name, address - customer's address(where the cab should arrive),
-additionalInformation - additional information for driver provided by customer, phoneNumber - validated phone number, carClass - class of the car required by customer,
-status - status of current query object(ACTIVE - in query, INACTIVE - not valid or was executed, EXECUTING - was taken by a driver and is currently executing.
- */
 public class UserQuery implements DBManageable {
+    private int id;
+    private User customer;
 
     private String name;
     private String address;
@@ -25,48 +23,71 @@ public class UserQuery implements DBManageable {
         return status;
     }
 
-    public void setStatus(QueryStatus status) {
+    public UserQuery setStatus(QueryStatus status) {
         this.status = status;
+        return this;
     }
 
     public CarClass getCarClass() {
         return carClass;
     }
 
-    public void setCarClass(CarClass carClass) {
+    public UserQuery setCarClass(CarClass carClass) {
         this.carClass = carClass;
+        return this;
     }
 
     public String getAddress() {
         return address;
     }
 
-    public void setAddress(String adress) {
+    public UserQuery setAddress(String adress) {
         this.address = adress;
+        return this;
     }
 
     public String getAdditionalInformation() {
         return additionalInformation;
     }
 
-    public void setAdditionalInformation(String additionalInformation) {
+    public UserQuery setAdditionalInformation(String additionalInformation) {
         this.additionalInformation = additionalInformation;
+        return this;
     }
 
     public String getPhoneNumber() {
         return phoneNumber;
     }
 
-    public void setPhoneNumber(String phoneNumber) {
+    public UserQuery setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+        return this;
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public UserQuery setName(String name) {
         this.name = name;
+        return this;
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public UserQuery setId(int id) {
+        this.id = id;
+        return this;
+    }
+
+    public User getCustomer() {
+        return customer;
+    }
+
+    public UserQuery setCustomer(User customer) {
+        this.customer = customer;
+        return this;
+    }
 }

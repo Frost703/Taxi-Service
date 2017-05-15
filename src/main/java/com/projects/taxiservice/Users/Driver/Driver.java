@@ -8,16 +8,6 @@ import javax.persistence.*;
  * Created by O'Neill on 6/30/2016.
  */
 
-/*
-Class Driver that represents a car taxi driver in a database. This driver has such fields:
-id - driver's number in the DB
-login - his login to personal account
-password - his password to personal account.*(To be encrypted and decrypted)
-name - driver's name that is used in his account and in customer's GUI
-car - the car that driver uses that contains it's description
- */
-
-
     /*  @Lob - large object - for objects that are bigger than 255chars
         @Column (name = "") - to change the column names
         @Transient - to not save this field to DB
@@ -29,8 +19,8 @@ car - the car that driver uses that contains it's description
 public class Driver implements DBManageable {
     @Id
     @GeneratedValue (strategy = GenerationType.AUTO )
-    public int id;
-    private String login, password, name;
+    private int id;
+    private String login, password, name, drivingSince;
     private Car car;
 
     public Car getCar() {
@@ -75,6 +65,13 @@ public class Driver implements DBManageable {
         this.password = password;
     }
 
+    public String getDrivingSince() {
+        return drivingSince;
+    }
+
+    public void setDrivingSince(String drivingSince) {
+        this.drivingSince = drivingSince;
+    }
 
     @Override
     public String toString() {
