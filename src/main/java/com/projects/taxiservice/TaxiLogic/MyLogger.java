@@ -1,4 +1,4 @@
-package com.projects.taxiservice.TaxiLogic;
+package com.projects.taxiservice.taxilogic;
 
 import java.io.*;
 

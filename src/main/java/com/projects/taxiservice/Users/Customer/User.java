@@ -1,7 +1,7 @@
-package com.projects.taxiservice.Users.Customer;
+package com.projects.taxiservice.users.customer;
 
-import com.projects.taxiservice.DBLogic.DBManageable;
-import com.projects.taxiservice.Users.Query.UserQuery;
+import com.projects.taxiservice.dblogic.DBManageable;
+import com.projects.taxiservice.users.query.UserQuery;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +14,8 @@ public class User implements DBManageable {
     private String login, password, name, phone, address;
     private List<UserQuery> queries = new ArrayList<UserQuery>();
     private UserQuery activeQuery;
+
+    public static User currentUser;
 
     public int getId() {
         return id;
@@ -85,5 +87,13 @@ public class User implements DBManageable {
     public User setActiveQuery(UserQuery activeQuery) {
         this.activeQuery = activeQuery;
         return this;
+    }
+
+    public static User getCurrentUser() {
+        return currentUser;
+    }
+
+    public static void setCurrentUser(User currentUser) {
+        User.currentUser = currentUser;
     }
 }

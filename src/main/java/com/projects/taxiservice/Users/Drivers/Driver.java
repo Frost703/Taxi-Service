@@ -1,6 +1,6 @@
-package com.projects.taxiservice.Users.Driver;
+package com.projects.taxiservice.users.drivers;
 
-import com.projects.taxiservice.DBLogic.DBManageable;
+import com.projects.taxiservice.dblogic.DBManageable;
 
 import javax.persistence.*;
 
@@ -15,7 +15,7 @@ import javax.persistence.*;
      */
 
 @Entity
-@Table(name = "Drivers")
+@Table(name = "drivers")
 public class Driver implements DBManageable {
     @Id
     @GeneratedValue (strategy = GenerationType.AUTO )
@@ -75,6 +75,6 @@ public class Driver implements DBManageable {
 
     @Override
     public String toString() {
-        return "Driver with id " + getId() + " and name " + getName() + " with car " + car.getCarClass();
+        return "drivers with id " + getId() + " and name " + getName() + " with car " + car.getCarClass();
     }
 }

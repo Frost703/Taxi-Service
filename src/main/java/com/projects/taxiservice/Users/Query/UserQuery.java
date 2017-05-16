@@ -1,8 +1,9 @@
-package com.projects.taxiservice.Users.Query;
+package com.projects.taxiservice.users.query;
 
-import com.projects.taxiservice.DBLogic.DBManageable;
-import com.projects.taxiservice.Users.Customer.User;
-import com.projects.taxiservice.Users.Driver.CarClass;
+import com.projects.taxiservice.dblogic.DBManageable;
+import com.projects.taxiservice.users.customer.User;
+import com.projects.taxiservice.users.drivers.CarClass;
+import com.projects.taxiservice.users.drivers.Driver;
 
 /**
  * Created by O'Neill on 7/3/2016.
@@ -11,6 +12,7 @@ import com.projects.taxiservice.Users.Driver.CarClass;
 public class UserQuery implements DBManageable {
     private int id;
     private User customer;
+    private Driver driver;
 
     private String name;
     private String address;
@@ -88,6 +90,15 @@ public class UserQuery implements DBManageable {
 
     public UserQuery setCustomer(User customer) {
         this.customer = customer;
+        return this;
+    }
+
+    public Driver getDriver() {
+        return driver;
+    }
+
+    public UserQuery setDriver(Driver driver) {
+        this.driver = driver;
         return this;
     }
 }

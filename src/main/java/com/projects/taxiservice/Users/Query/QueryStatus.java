@@ -1,4 +1,4 @@
-package com.projects.taxiservice.Users.Query;
+package com.projects.taxiservice.users.query;
 
 /**
  * Created by O'Neill on 7/3/2016.

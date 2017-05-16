@@ -1,18 +1,19 @@
 package com.projects.taxiservice;
 
 
-import com.projects.taxiservice.DBLogic.DBController;
+import com.projects.taxiservice.dblogic.DBController;
 
-
-import com.projects.taxiservice.Users.Driver.*;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 public class TaxiService {
 
     public static void main(String[] args) {
-        ApplicationContext context = new ClassPathXmlApplicationContext("SpringBeans.xml");
-        Driver driver = (Driver)context.getBean("driver");
+        /* ApplicationContext context = new ClassPathXmlApplicationContext("SpringBeans.xml");
+        drivers driver = (drivers)context.getBean("driver");
         driver.setLogin("Driver2");
         driver.setName("Name2");
         driver.setPassword("password2");
@@ -23,9 +24,20 @@ public class TaxiService {
         driver.setCar(car);
 
         DBController.saveToDB(driver);
-        driver = new Driver();
+        driver = new drivers();
         driver = null;
-        driver = DBController.getObjectById(Driver.class, 1);
+        driver = DBController.getObjectById(drivers.class, 1);
         System.out.println(driver);
+        */
+
+        File file = new File("config.config");
+        System.out.println(file.exists());
+
+
+
+        try {
+            System.out.println(DBController.executeCarOperation("text"));
+        }
+        catch(Exception e) { e.printStackTrace(); }
     }
 }

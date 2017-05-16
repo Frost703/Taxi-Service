@@ -43,7 +43,7 @@
         <property name="show_sql">true</property>
 
 
-        <mapping class="com.projects.taxiservice.Users.Driver"/>
+        <mapping class="com.projects.taxiservice.users.drivers.Driver"/>
 
     </session-factory>
 
