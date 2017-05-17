@@ -37,6 +37,7 @@ public final class DBController {
     private static final String driver = "org.postgresql.Driver";
 
     private static final Logger logger = Logger.getLogger(DBController.class.getName());
+    private static FileHandler dbLogHandler;
     private static final Properties prop = new Properties();
 
     private static UserDBController userController = null;
@@ -46,7 +47,8 @@ public final class DBController {
 
     static{
         try{
-            logger.addHandler(new FileHandler("log.log", false));
+            dbLogHandler = new FileHandler("log.log", false);
+            logger.addHandler(dbLogHandler);
             prop.load(new FileInputStream(new File("config.config")));
 
             postgres = prop.getProperty("postgres");
@@ -65,6 +67,10 @@ public final class DBController {
             logger.log(Level.INFO, "Initialized controller classes for every DB instance.");
 
         } catch (Exception e) { logger.log(Level.SEVERE, "Failed to load required resources and connect to DB. Error message:\n" + e.toString(), e); }
+    }
+
+    public static FileHandler getLogHander(){
+        return dbLogHandler;
     }
 
     public static boolean saveToDB(Object o){
@@ -96,6 +102,7 @@ public final class DBController {
         return (T)o;
     }
 
+    //register (insert), get (select),
     public static synchronized Object executeUserOperation(String operation, User user) throws SQLException, IllegalArgumentException{
         return userController.execute(operation, user);
     }
@@ -108,19 +115,4 @@ public final class DBController {
     public static synchronized Object executeQueryOperation(String operation, UserQuery query) throws SQLException, IllegalArgumentException{
         return queryController.execute(operation, query);
     }
-
-    //for operations that don't require an object to be passed as argument (Ex. Select)
-    public static synchronized Object executeUserOperation(String operation) throws SQLException, IllegalArgumentException{
-        return userController.execute(operation);
-    }
-    public static synchronized Object executeDriverOperation(String operation) throws SQLException, IllegalArgumentException{
-        return driverController.execute(operation);
-    }
-    public static synchronized Object executeCarOperation(String operation) throws SQLException, IllegalArgumentException{
-        return  carController.execute(operation);
-    }
-    public static synchronized Object executeQueryOperation(String operation) throws SQLException, IllegalArgumentException{
-        return queryController.execute(operation);
-    }
-
 }

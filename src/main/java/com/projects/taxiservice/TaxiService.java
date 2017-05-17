@@ -2,6 +2,7 @@ package com.projects.taxiservice;
 
 
 import com.projects.taxiservice.dblogic.DBController;
+import com.projects.taxiservice.users.customer.User;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -29,14 +30,16 @@ public class TaxiService {
         driver = DBController.getObjectById(drivers.class, 1);
         System.out.println(driver);
         */
-
-        File file = new File("config.config");
-        System.out.println(file.exists());
-
-
-
         try {
-            System.out.println(DBController.executeCarOperation("text"));
+            User user = new User();
+            user.setLogin("fourthUser@gmail.com");
+            user.setPassword("qwerty");
+            user.setPhone("+380966666666");
+            user.setName("Fourth User");
+            user.setAddress("SomeCity, SomeStreet num, SomeApp num, SomePostalCode");
+
+            System.out.println("Status: " + DBController.executeUserOperation("register", user));
+
         }
         catch(Exception e) { e.printStackTrace(); }
     }
