@@ -5,6 +5,8 @@ import com.projects.taxiservice.users.customer.User;
 import com.projects.taxiservice.users.drivers.CarClass;
 import com.projects.taxiservice.users.drivers.Driver;
 
+import java.time.LocalDateTime;
+
 /**
  * Created by O'Neill on 7/3/2016.
  */
@@ -13,6 +15,8 @@ public class UserQuery implements DBManageable {
     private int id;
     private User customer;
     private Driver driver;
+
+    private LocalDateTime created = LocalDateTime.now(), activated, closed;
 
     private String name;
     private String address;
@@ -100,5 +104,29 @@ public class UserQuery implements DBManageable {
     public UserQuery setDriver(Driver driver) {
         this.driver = driver;
         return this;
+    }
+
+    public LocalDateTime getCreated() {
+        return created;
+    }
+
+    public void setCreated(LocalDateTime created) {
+        this.created = created;
+    }
+
+    public LocalDateTime getActivated() {
+        return activated;
+    }
+
+    public void setActivated(LocalDateTime activated) {
+        this.activated = activated;
+    }
+
+    public LocalDateTime getClosed() {
+        return closed;
+    }
+
+    public void setClosed(LocalDateTime closed) {
+        this.closed = closed;
     }
 }

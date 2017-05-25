@@ -69,7 +69,7 @@ public final class DBController {
         } catch (Exception e) { logger.log(Level.SEVERE, "Failed to load required resources and connect to DB. Error message:\n" + e.toString(), e); }
     }
 
-    public static FileHandler getLogHander(){
+    public static FileHandler getLogHandler(){
         return dbLogHandler;
     }
 
@@ -103,16 +103,16 @@ public final class DBController {
     }
 
     //register (insert), get (select),
-    public static synchronized Object executeUserOperation(String operation, User user) throws SQLException, IllegalArgumentException{
+    public static synchronized Object executeUserOperation(String operation, User user) throws SQLException{
         return userController.execute(operation, user);
     }
-    public static synchronized Object executeDriverOperation(String operation, Driver driver) throws SQLException, IllegalArgumentException{
+    public static synchronized Object executeDriverOperation(String operation, Driver driver) throws SQLException{
         return driverController.execute(operation, driver);
     }
-    public static synchronized Object executeCarOperation(String operation, Car car) throws SQLException, IllegalArgumentException{
+    public static synchronized Object executeCarOperation(String operation, Car car) throws SQLException{
         return carController.execute(operation, car);
     }
-    public static synchronized Object executeQueryOperation(String operation, UserQuery query) throws SQLException, IllegalArgumentException{
+    public static synchronized Object executeQueryOperation(String operation, UserQuery query) throws SQLException{
         return queryController.execute(operation, query);
     }
 }
