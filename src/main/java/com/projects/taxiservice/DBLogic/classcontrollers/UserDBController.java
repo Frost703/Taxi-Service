@@ -35,25 +35,28 @@ public class UserDBController {
         switch(operation.toLowerCase()){
             case "register": output = insertUser(user); break;
             case "get": output = selectUser(user); break;
-            default: output = null; logger.log(Level.INFO, "Operation not recognized. Returning a null object. Operation: {0}", operation);
+            default: output = null;
+                logger.log(Level.INFO, "Operation not recognized. Returning a null object. Operation: {0}", operation);
+                throw new IllegalArgumentException("Operation not recognized! Operation: " + operation);
         }
 
         return output;
     }
 
-    private int insertUser(User user) throws SQLException{
+    private User insertUser(User user) throws SQLException{
         String insertOperation = "INSERT INTO \"users\" " +
                 "(login, password, phone, name, address) VALUES " +
                 "(?, ?, ?, ?, ?);";
 
+        if (user == null) throw new IllegalArgumentException("Can't insert a null user to DB");
+
+        if (user.getLogin() == null || user.getLogin().length() < 1) throw new IllegalArgumentException("Login cannot be empty");
+        if (user.getPassword() == null || user.getPassword().length() < 1)
+            throw new IllegalArgumentException("Password cannot be empty");
+
+        if (user.getName() == null || user.getName().length() < 1) throw new IllegalArgumentException("User name cannot be empty");
+
         try {
-            if (user == null) throw new IllegalArgumentException("Can't insert a null user to DB");
-
-            if (user.getLogin() == null || user.getLogin().length() < 1) throw new IllegalArgumentException("Login cannot be empty");
-            if (user.getPassword() == null || user.getPassword().length() < 1)
-                throw new IllegalArgumentException("Password cannot be empty");
-            if (user.getName() == null || user.getName().length() < 1) throw new IllegalArgumentException("Name cannot be empty");
-
 
             PreparedStatement st = con.prepareStatement(insertOperation);
             st.setString(1, user.getLogin().toLowerCase());
@@ -71,24 +74,21 @@ public class UserDBController {
             user = selectUser(user.setId(-1));
             if(user.getId() < 0) throw new SQLException("Failed to insert a user to DB");
 
-        } catch (SQLException sqe) {
-            logger.log(Level.WARNING, sqe.getMessage(), sqe);
-            throw sqe;
-        } catch(IllegalArgumentException il) {
-            logger.log(Level.WARNING, il.getMessage(), il);
-            throw il;
+        } catch (Exception e) {
+            logger.log(Level.WARNING, e.getMessage(), e);
+            throw e;
         }
 
         logger.log(Level.INFO, "Inserted a new user to DB with login={0}", user.getLogin());
-        return 1;
+        return user;
     }
 
     private User selectUser(User user) throws SQLException{
         try {
             if (user == null)
-                throw new IllegalArgumentException("Can't perform select statement. Passed User object is null");
-            if (user.getId() < 0 && (user.getLogin() == null || user.getLogin().length() < 1))
-                throw new IllegalArgumentException("Can't perform select statement. Id or login must be provided");
+                throw new IllegalArgumentException("Can't perform select user statement. Passed User object is null");
+            if (user.getId() < 0 && (user.getLogin() == null || user.getLogin().length() < 3))
+                throw new IllegalArgumentException("Can't perform select user statement. Id or login must be provided");
 
             String selectUser = "SELECT * FROM \"users\" WHERE ";
             ResultSet rs = null;
@@ -103,27 +103,23 @@ public class UserDBController {
                 st = con.prepareStatement(selectUser);
                 st.setString(1, user.getLogin().toLowerCase());
             }
-            rs = st.executeQuery();
 
+            User userStored = new User();
+            rs = st.executeQuery();
             while(rs.next()){
-                user.setId(rs.getInt("id")).setLogin(rs.getString("login")).setName(rs.getString("name"))
+                userStored.setId(rs.getInt("id")).setLogin(rs.getString("login")).setName(rs.getString("name"))
                         .setPhone(rs.getString("phone")).setAddress(rs.getString("address"));
             }
+
             rs.close();
             st.close();
 
-
-
-        } catch (SQLException sqe) {
-            logger.log(Level.WARNING, sqe.getMessage(), sqe);
-            throw sqe;
-        } catch(IllegalArgumentException il) {
-            logger.log(Level.WARNING, il.getMessage(), il);
-            throw il;
+            logger.log(Level.FINEST, "Returned an object from DB with id={0} and login={1}", new Object[] {userStored.getId(), userStored.getLogin()});
+            return userStored;
+        } catch (Exception e) {
+            logger.log(Level.WARNING, e.getMessage(), e);
+            throw e;
         }
-
-        logger.log(Level.FINEST, "Returned an object from DB with id={0} and login={1}", new Object[] {user.getId(), user.getLogin()});
-        return user;
     }
 
 

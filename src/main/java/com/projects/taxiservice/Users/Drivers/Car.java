@@ -41,5 +41,11 @@ public class Car {
         this.carClass = carClass;
     }
 
+    public int getId() {
+        return id;
+    }
 
+    public void setId(int id) {
+        this.id = id;
+    }
 }

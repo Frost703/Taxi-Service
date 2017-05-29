@@ -1,12 +1,10 @@
 package com.projects.taxiservice.dblogic;
 
-import com.projects.taxiservice.dblogic.classcontrollers.CarDBController;
 import com.projects.taxiservice.dblogic.classcontrollers.DriverDBController;
 import com.projects.taxiservice.dblogic.classcontrollers.UserDBController;
 import com.projects.taxiservice.dblogic.classcontrollers.UserQueryDBController;
 import com.projects.taxiservice.taxilogic.MyLogger;
 import com.projects.taxiservice.users.customer.User;
-import com.projects.taxiservice.users.drivers.Car;
 import com.projects.taxiservice.users.drivers.Driver;
 import com.projects.taxiservice.users.query.UserQuery;
 import org.hibernate.Session;
@@ -42,7 +40,6 @@ public final class DBController {
 
     private static UserDBController userController = null;
     private static DriverDBController driverController = null;
-    private static CarDBController carController = null;
     private static UserQueryDBController queryController = null;
 
     static{
@@ -62,7 +59,6 @@ public final class DBController {
 
             userController = new UserDBController(con);
             driverController = new DriverDBController(con);
-            carController = new CarDBController(con);
             queryController = new UserQueryDBController(con);
             logger.log(Level.INFO, "Initialized controller classes for every DB instance.");
 
@@ -108,9 +104,6 @@ public final class DBController {
     }
     public static synchronized Object executeDriverOperation(String operation, Driver driver) throws SQLException{
         return driverController.execute(operation, driver);
-    }
-    public static synchronized Object executeCarOperation(String operation, Car car) throws SQLException{
-        return carController.execute(operation, car);
     }
     public static synchronized Object executeQueryOperation(String operation, UserQuery query) throws SQLException{
         return queryController.execute(operation, query);

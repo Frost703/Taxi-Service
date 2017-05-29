@@ -3,6 +3,7 @@ package com.projects.taxiservice.users.drivers;
 import com.projects.taxiservice.dblogic.DBManageable;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 
 /**
  * Created by O'Neill on 6/30/2016.
@@ -20,57 +21,72 @@ public class Driver implements DBManageable {
     @Id
     @GeneratedValue (strategy = GenerationType.AUTO )
     private int id;
-    private String login, password, name, drivingSince;
+    private LocalDate drivingSince;
+    private String login, password, name;
     private Car car;
+
+    private static Driver currentDriver;
 
     public Car getCar() {
         return car;
     }
 
-    public void setCar(Car car) {
+    public Driver setCar(Car car) {
         this.car = car;
+        return this;
     }
 
     public int getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public Driver setId(int id) {
         this.id = id;
+        return this;
     }
-
-
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public Driver setName(String name) {
         this.name = name;
+        return this;
     }
 
     public String getLogin() {
         return login;
     }
 
-    public void setLogin(String login) {
+    public Driver setLogin(String login) {
         this.login = login;
+        return this;
     }
 
     public String getPassword() {
         return password;
     }
 
-    public void setPassword(String password) {
+    public Driver setPassword(String password) {
         this.password = password;
+        return this;
     }
 
-    public String getDrivingSince() {
+    public LocalDate getDrivingSince() {
         return drivingSince;
     }
 
-    public void setDrivingSince(String drivingSince) {
+    public Driver setDrivingSince(LocalDate drivingSince) {
         this.drivingSince = drivingSince;
+        return this;
+    }
+
+    public static Driver getCurrentDriver() {
+        return currentDriver;
+    }
+
+    public static void setCurrentDriver(Driver currentDriver) {
+        Driver.currentDriver = currentDriver;
     }
 
     @Override

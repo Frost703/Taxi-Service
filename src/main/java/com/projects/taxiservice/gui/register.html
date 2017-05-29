@@ -4,32 +4,35 @@
 	</head>
 	
 	<body>
+	<script src="/My Java Projects/Taxi Service/src/main/java/com/projects/taxiservice/gui/scripts/jQuery-2.1.3.min.js"></script>
+	<script src="/My Java Projects/Taxi Service/src/main/java/com/projects/taxiservice/gui/scripts/scripts.js"></script>
 		<h1>Registration Page</h1>
-		<div><form>
-			<div>Email <input type="text"></div>
-			<div>Full Name <input type="text"></div>
-			<div>Password <input type="password"> <input type="checkbox"> Show password</div>
+		<div><form onsubmit="event.preventDefault(); register()">
+			<div>Email <input type="text" id="login"></div>
+			<div>Full Name <input type="text" id="name"></div>
+			<div>Password <input type="password" id="password"> <input type="checkbox" id="showpass"> Show password</div>
 			<br>
-			<div>Register as <input type="radio" name="type" value="driver"> User <input type="radio" name="type" value="user" checked> Driver</div>
-			<div class="driver">
-				<div>Driving since <input type="text"></div>
-				<div>Plate number <input type="text"></div>
-				<div>Car description <input type="text"></div>
-				<div>Car type <select>
+			<div>Register as <input type="radio" name="type" value="user" class="opt" checked> User <input type="radio" name="type" value="driver" class="opt"> Driver</div>
+			<div class="driver" style="display: none;">
+				<div>Driving since <input type="text" id="dsince"><span>Date example: 23.01.2012</span></div>
+				<div>Plate number <input type="text" id="dplate"></div>
+				<div>Car description <input type="text" id="dcar"></div>
+				<div>Car type <select id="dclass">
 									<option>Regular</option>
-									<option>Family size</option>
-									<option>Vip class</option>
+									<option>Family</option>
+									<option>Vip</option>
 								</select>
 				</div>
 			</div>
-			<div class="user" style="display: none;">
-				<div>Phone number <input type="text"></div>
-				<div>Address <input type="text"></div>
+			<div class="user">
+				<div>Phone number <input type="text" id="phone"></div>
+				<div>Address <input type="text" id="address"></div>
 			</div>
 			<div><input type="submit" value="Register"></div>
 		</form></div>
 			<br>
 			<div><a href="/My Java Projects/Taxi Service/src/main/java/com/projects/taxiservice/gui/login.html">Back to Login page</a></div>
+			<br><br><div class="test"></div>
 			
 	</body>
 </html>
