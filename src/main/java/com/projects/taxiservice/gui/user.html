@@ -1,4 +1,46 @@
-request a specific driver 	-> list of "drivers on route"
-ask for a cab				-> input form from user (fill in required fields from user-registration information and allow user to change it)
-chat						-> a chat window driver-to-user chat. Available after driver accepts a request
-status window 				-> shows a status of current request and a history of (~5) last requests
+<html>
+	<head>
+	<title></title>
+	</head>
+	<body>
+		<script src="/My Java Projects/Taxi Service/src/main/java/com/projects/taxiservice/gui/scripts/jQuery-2.1.3.min.js"></script>
+		<script src="/My Java Projects/Taxi Service/src/main/java/com/projects/taxiservice/gui/scripts/userScripts.js"></script>
+		<div>Expandable <input type="button" id="cab" value="Get me a cab!">
+			<div>User input section
+				<table>
+					<tr><td>Name: </td><td><input type="text" value=""></td></tr>
+					<tr><td>Phone: </td><td><input type="text" value=""></td></tr>
+					<tr><td>Address: </td><td><input type="text" value=""></td></tr>
+					<tr><td>Car Class: </td><td><input type="text" value=""></td></tr>
+					<tr><td>Additional info: </td><td><input type="text" value=""></td></tr>
+				</table>
+			</div>
+		</div>
+		
+		<table><tr>
+		<td><div>
+			<table>
+				<tr><td>Status</td><td>Requests</td><td>Driver</td><td>Actions</td></tr>
+				<tr><td>Active</td><td>Current:</td><td>Rajesh</td><td><input type="button" class="cancel" value="Cancel"></td></tr>
+				<tr><td>Closed</td><td>Date1</td><td>Haresh</td><td><input type="button" class="feedback" value="Feedback"></td></tr>
+				<tr><td>Closed</td><td>Date2</td><td>Manesh</td><td><input type="button" class="feedback" value="Feedback"></td></tr>
+				<tr><td>Canceled</td><td>Date3</td><td>Tadjesh</td><td><input type="button" class="feedback" value="Feedback"></td></tr>
+			</table>
+		</div></td>
+		
+		<td rowspan="2">Chat goes here<br>1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10</td>
+		</tr>
+		<tr><td><div>
+			<table>
+				<tr><td>Driver</td><td>Status</td><td>Actions</td></tr>
+				<tr><td>Haresh</td><td>Available</td><td><input type="button" class="direct" value="Cab"><input type="button" class="chat" value="Chat"></td></tr>
+				<tr><td>Rajesh</td><td>Busy (~30m)</td><td><input type="button" class="direct" value="Cab"><input type="button" class="chat" value="Chat"></td></tr>
+				<tr><td>Manesh</td><td>Busy (~120m)</td><td><input type="button" class="direct" value="Cab"><input type="button" class="chat" value="Chat"></td></tr>
+				<tr><td>Tadjesh</td><td>Available</td><td><input type="button" class="direct" value="Cab"><input type="button" class="chat" value="Chat"></td></tr>
+			</table>
+		</div></td></tr>
+		</table>
+		
+		
+	</body>
+</html>

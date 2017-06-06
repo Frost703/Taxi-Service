@@ -1,9 +1,8 @@
-package com.projects.taxiservice.dblogic.classcontrollers;
+package com.projects.taxiservice.dblogic.dao;
 
 import com.projects.taxiservice.dblogic.DBController;
 import com.projects.taxiservice.users.customer.User;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -16,21 +15,22 @@ import java.util.logging.Logger;
 /**
  * Created by O'Neill on 5/16/2017.
  */
-public class UserDBController {
-    private final Connection con;
-    private static final Logger logger = Logger.getLogger(UserDBController.class.getName());
+public final class UserDBController {
+    private static Connection con;
+    private static final Logger logger = Logger.getLogger(DBController.class.getName());
 
-    public UserDBController(Connection con) throws IOException{
-        if(con == null) throw new IllegalArgumentException("Connection object cannot be null!");
-        this.con = con;
-        logger.addHandler(DBController.getLogHandler());
+    public static void setConnection(Connection connection){
+        if(connection == null) throw new IllegalArgumentException("Connection object cannot be null!");
+        con = connection;
     }
 
-    public List<String> getListOfAvailableOperations(){
+    private UserDBController() {}
+
+    public static List<String> getListOfAvailableOperations(){
         return Arrays.asList("register->inserts into DB", "get->selects by id or login");
     }
 
-    public Object execute(String operation, User user) throws SQLException{
+    public static Object execute(String operation, User user) throws SQLException{
         Object output;
         switch(operation.toLowerCase()){
             case "register": output = insertUser(user); break;
@@ -43,7 +43,7 @@ public class UserDBController {
         return output;
     }
 
-    private User insertUser(User user) throws SQLException{
+    private static User insertUser(User user) throws SQLException{
         String insertOperation = "INSERT INTO \"users\" " +
                 "(login, password, phone, name, address) VALUES " +
                 "(?, ?, ?, ?, ?);";
@@ -69,7 +69,7 @@ public class UserDBController {
             if (user.getAddress() == null || user.getAddress().length() < 3) st.setString(5, null);
             else st.setString(5, user.getAddress());
 
-            st.execute();
+            st.executeUpdate();
 
             user = selectUser(user.setId(-1));
             if(user.getId() < 0) throw new SQLException("Failed to insert a user to DB");
@@ -83,7 +83,7 @@ public class UserDBController {
         return user;
     }
 
-    private User selectUser(User user) throws SQLException{
+    private static User selectUser(User user) throws SQLException{
         try {
             if (user == null)
                 throw new IllegalArgumentException("Can't perform select user statement. Passed User object is null");
@@ -114,13 +114,12 @@ public class UserDBController {
             rs.close();
             st.close();
 
-            logger.log(Level.FINEST, "Returned an object from DB with id={0} and login={1}", new Object[] {userStored.getId(), userStored.getLogin()});
+            logger.log(Level.FINEST, "Returned an object from DB with id={0}", userStored.getId());
             return userStored;
         } catch (Exception e) {
             logger.log(Level.WARNING, e.getMessage(), e);
             throw e;
         }
     }
-
 
 }

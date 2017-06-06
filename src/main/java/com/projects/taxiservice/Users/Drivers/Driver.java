@@ -25,8 +25,6 @@ public class Driver implements DBManageable {
     private String login, password, name;
     private Car car;
 
-    private static Driver currentDriver;
-
     public Car getCar() {
         return car;
     }
@@ -79,14 +77,6 @@ public class Driver implements DBManageable {
     public Driver setDrivingSince(LocalDate drivingSince) {
         this.drivingSince = drivingSince;
         return this;
-    }
-
-    public static Driver getCurrentDriver() {
-        return currentDriver;
-    }
-
-    public static void setCurrentDriver(Driver currentDriver) {
-        Driver.currentDriver = currentDriver;
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.projects.taxiservice.dblogic.classcontrollers;
+package com.projects.taxiservice.dblogic.dao;
 
 import com.projects.taxiservice.dblogic.DBController;
 import com.projects.taxiservice.users.drivers.Car;
@@ -6,6 +6,8 @@ import com.projects.taxiservice.users.drivers.CarClass;
 import com.projects.taxiservice.users.drivers.Driver;
 
 import java.sql.*;
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -13,17 +15,22 @@ import java.util.logging.Logger;
 /**
  * Created by O'Neill on 5/16/2017.
  */
-public class DriverDBController {
-    private final Connection con;
-    private static final Logger logger = Logger.getLogger(DriverDBController.class.getName());
+public final class DriverDBController {
+    private static Connection con;
+    private static final Logger logger = Logger.getLogger(DBController.class.getName());
 
-    public DriverDBController(Connection con) {
-        if(con == null) throw new IllegalArgumentException("Connection object cannot be null!");
-        this.con = con;
-        logger.addHandler(DBController.getLogHandler());
+    private DriverDBController() {}
+
+    public static void setConnection(Connection connection) {
+        if(connection == null) throw new IllegalArgumentException("Connection object cannot be null!");
+        con = connection;
     }
 
-    public Object execute(String operation, Driver driver) throws SQLException {
+    public static List<String> getListOfAvailableOperations(){
+        return Arrays.asList("register->inserts into DB", "get->selects by id or login");
+    }
+
+    public static Object execute(String operation, Driver driver) throws SQLException {
         Object output = null;
         switch(operation.toLowerCase()){
             case "get" : output = selectDriver(driver);
@@ -37,7 +44,7 @@ public class DriverDBController {
         return output;
     }
 
-    private Driver selectDriver(Driver driver) throws SQLException{
+    private static Driver selectDriver(Driver driver) throws SQLException{
         if(driver == null) throw new IllegalArgumentException("Can't perform select driver statement. Passed Driver object is null");
         if(driver.getId() < 1 && (driver.getLogin() == null || driver.getLogin().length() < 3))
             throw new IllegalArgumentException("Can't perform select driver statement. Id or login must be provided");
@@ -62,7 +69,7 @@ public class DriverDBController {
             while(rs.next()){
                 driverStored.setId(rs.getInt("id")).setLogin(rs.getString("login")).setName(rs.getString("name"))
                         .setPassword(rs.getString("password"))
-                        .setDrivingSince(rs.getTimestamp("drivingsince").toLocalDateTime().toLocalDate());
+                        .setDrivingSince(rs.getDate("drivingsince").toLocalDate());
                 carId = rs.getInt("carid");
             }
 
@@ -95,15 +102,14 @@ public class DriverDBController {
             rs.close();
             st.close();
 
-            logger.log(Level.FINEST, "Returned an object from DB with id={0}, login={1} and car id={2}"
-                    , new Object[] {driverStored.getId(), driverStored.getLogin(), driverStored.getCar().getId()});
+            logger.log(Level.FINEST, "Returned an object from DB with id={0}",driverStored.getId());
             return driverStored;
         } catch(Exception e) {
             throw e;
         }
     }
 
-    private Driver insertDriver(Driver driver) throws SQLException {
+    private static Driver insertDriver(Driver driver) throws SQLException {
         String insertDriver = "INSERT INTO \"drivers\" " +
                 "(login, password, name, drivingsince, carid) VALUES " +
                 "(?,?,?,?,?);";
@@ -131,7 +137,7 @@ public class DriverDBController {
             st.setString(2, car.getCarDescription());
             st.setString(3, car.getCarClass().name().toLowerCase());
 
-            st.execute();
+            st.executeUpdate();
 
             //select the last car entity to get it's id
             st = con.prepareStatement(selectLastCar);
@@ -140,6 +146,7 @@ public class DriverDBController {
             while(rs.next()){
                 carId = rs.getInt("id");
             }
+            rs.close();
 
             if(carId < 1) throw new SQLException("Failed to insert a new car record to DB. Plate: " + car.getCarNumber());
 
@@ -148,15 +155,14 @@ public class DriverDBController {
             st.setString(1, driver.getLogin());
             st.setString(2, driver.getPassword());
             st.setString(3, driver.getName());
-            st.setTimestamp(4, Timestamp.valueOf(driver.getDrivingSince().atStartOfDay()));
+            st.setDate(4, Date.valueOf(driver.getDrivingSince()));
             st.setInt(5, carId);
 
-            st.execute();
+            st.executeUpdate();
 
             st.close();
-            rs.close();
 
-            //check for successful input
+            //check for successful input and get driver's id
             Driver driverStored = selectDriver(driver.setId(-1));
             if(driverStored.getId() < 1) throw new SQLException("Failed to insert a new driver to DB. Login: " + driver.getLogin());
 

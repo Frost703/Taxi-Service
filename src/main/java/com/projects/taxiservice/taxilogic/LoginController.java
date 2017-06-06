@@ -6,6 +6,7 @@ import com.projects.taxiservice.users.drivers.Driver;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.sql.SQLException;
 
 /**
@@ -18,57 +19,53 @@ public class LoginController {
 
     @CrossOrigin
     @RequestMapping(method = RequestMethod.POST)
-    public Object signIn(HttpServletRequest req){
-        if(time - System.currentTimeMillis() < 0.5 * 1000) return null;
+    public String signIn(HttpServletRequest req, HttpServletResponse resp){
+        if(System.currentTimeMillis() - time < 0.5 * 1000) {
+            return "Requests are too frequent. Pls wait 1 second";
+        }
         time = System.currentTimeMillis();
 
-        if(req.getParameter("type").equals("user")) return loginUser(req);
-        else return loginDriver(req);
+        String login = req.getParameter("login");
+        String password = req.getParameter("password");
+        String type = req.getParameter("type");
+
+        if(type.equals("user")) return loginUser(login, password);
+        else return loginDriver(login, password);
     }
 
-    private User loginUser(HttpServletRequest req){
+    private String loginUser(String login, String password){
         User customer = new User();
-        customer.setId(-1).setLogin(req.getParameter("login")).setPassword(req.getParameter("password"));
+        String valid = "valid user", notValid = "wrong user";
+        customer.setId(-1)
+                .setLogin(login)
+                .setPassword(password);
 
         try {
             User user = (User)DBController.executeUserOperation("get", customer);
 
-            if(user.getId() > 0) {
-
-                if(!user.getPassword().equals(customer.getPassword())) return customer.setId(-1);
-
-                customer.setId(user.getId()).setPassword("").setName(user.getName());
-                User.setCurrentUser(user);
-            }
-            else customer.setId(-1);
+            if(user.getId() < 1) return notValid;
+            else return valid;
         }catch (SQLException sqe) {
             sqe.printStackTrace();
-            customer.setId(-1);
+            return notValid;
         }
-
-        return customer;
     }
 
-    private Driver loginDriver(HttpServletRequest req){
+    private String loginDriver(String login, String password){
         Driver driver = new Driver();
-        driver.setId(-1).setLogin(req.getParameter("login")).setPassword(req.getParameter("password"));
+        String valid = "valid driver", notValid = "wrong driver";
+        driver.setId(-1)
+                .setLogin(login)
+                .setPassword(password);
 
         try{
             Driver driverStored = (Driver)DBController.executeDriverOperation("get", driver);
 
-            if(driverStored.getId() > 0) {
-
-                if (!driverStored.getPassword().equals(driver.getPassword())) return driver.setId(-1);
-
-                driver.setId(driverStored.getId()).setPassword("").setName(driverStored.getName());
-                Driver.setCurrentDriver(driverStored);
-            }
-            else driver.setId(-1);
+            if(driverStored.getId() < 1) return notValid;
+            else return valid;
         } catch(SQLException sqe) {
             sqe.printStackTrace();
-            driver.setId(-1);
+            return notValid;
         }
-
-        return driver;
     }
 }

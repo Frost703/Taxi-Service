@@ -15,8 +15,6 @@ public class User implements DBManageable {
     private List<UserQuery> queries = new ArrayList<UserQuery>();
     private UserQuery activeQuery;
 
-    private static User currentUser;
-
     public int getId() {
         return id;
     }
@@ -87,14 +85,6 @@ public class User implements DBManageable {
     public User setActiveQuery(UserQuery activeQuery) {
         this.activeQuery = activeQuery;
         return this;
-    }
-
-    public static User getCurrentUser() {
-        return currentUser;
-    }
-
-    public static void setCurrentUser(User currentUser) {
-        User.currentUser = currentUser;
     }
 
     @Override

@@ -19,16 +19,16 @@ $("#showpass").on({click:function(){
 function login(){
 	var email = $("#login").val();
 	var pwd = $("#password").val();
-	alert("Login: "+email+ " Password: "+pwd);
+	var type = $("input[name=type]:checked").val();
+	
     $.ajax({
         type: "POST",
         url: "http://localhost:8080/login",
-        data: "login="+email+"&password="+pwd,
+        data: "login="+email+"&password="+pwd+"&type="+type,
         success: function(data){
-			var obj = data;
-			
-            alert(obj.name);
-			alert(obj.id);
+			if(data.includes("wrong")) alert("Wrong login or password!");
+			else if(data.includes("user")) window.location="/My Java Projects/Taxi Service/src/main/java/com/projects/taxiservice/gui/user.html";
+			else if(data.includes("driver")) window.location="/My Java Projects/Taxi Service/src/main/java/com/projects/taxiservice/gui/driver.html";
         }
 
     });
@@ -59,7 +59,11 @@ function register(){
         url: "http://localhost:8080/register",
         data: data,
         success: function(data){
-			//alert("success");
+			if(data.includes("success")) window.location = "/My Java Projects/Taxi Service/src/main/java/com/projects/taxiservice/gui/login.html";
+			else{	
+				alert("Sorry, error on server");
+				console.log(data);
+			}
         }
 
     });

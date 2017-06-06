@@ -33,7 +33,7 @@ public class RegisterController {
         else return registerDriver(req);
     }
 
-    private User registerUser(HttpServletRequest req){
+    private String registerUser(HttpServletRequest req){
         User user = new User();
 
         user.setLogin(req.getParameter("login")).setPassword(req.getParameter("password"))
@@ -41,16 +41,18 @@ public class RegisterController {
                 .setAddress(req.getParameter("address"));
 
         try{
+            System.out.println("Before user db operation");
             user = (User)DBController.executeUserOperation("register", user);
+            System.out.println("After user db operation");
             if(user.getId() < 1) throw new SQLException("Failed to register new user!");
         }catch(SQLException e){
-            e.printStackTrace();
+            return "Fail. Exception: " + e.getMessage();
         }
 
-        return user;
+        return "success";
     }
 
-    private Driver registerDriver(HttpServletRequest req) {
+    private String registerDriver(HttpServletRequest req) {
         Driver driver = new Driver();
 
         driver.setLogin(req.getParameter("login")).setPassword(req.getParameter("password"))
@@ -80,8 +82,8 @@ public class RegisterController {
             driver = (Driver)DBController.executeDriverOperation("register", driver);
             if(driver.getId() < 1) throw new SQLException("Failed to register new driver!");
         }catch(SQLException e){
-            e.printStackTrace();
+            return "Fail. Exception: " + e.getMessage();
         }
-        return driver;
+        return "success";
     }
 }

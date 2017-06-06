@@ -1,8 +1,9 @@
 package com.projects.taxiservice.dblogic;
 
-import com.projects.taxiservice.dblogic.classcontrollers.DriverDBController;
-import com.projects.taxiservice.dblogic.classcontrollers.UserDBController;
-import com.projects.taxiservice.dblogic.classcontrollers.UserQueryDBController;
+import com.projects.taxiservice.dblogic.dao.DataSourceFactory;
+import com.projects.taxiservice.dblogic.dao.DriverDBController;
+import com.projects.taxiservice.dblogic.dao.UserDBController;
+import com.projects.taxiservice.dblogic.dao.UserQueryDBController;
 import com.projects.taxiservice.taxilogic.MyLogger;
 import com.projects.taxiservice.users.customer.User;
 import com.projects.taxiservice.users.drivers.Driver;
@@ -11,12 +12,8 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Properties;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,43 +27,24 @@ public final class DBController {
     static Session session = null;
 
     private static volatile Connection con = null;
-    private static String postgres;
-    private static String username, password;
-    private static final String driver = "org.postgresql.Driver";
 
     private static final Logger logger = Logger.getLogger(DBController.class.getName());
     private static FileHandler dbLogHandler;
-    private static final Properties prop = new Properties();
-
-    private static UserDBController userController = null;
-    private static DriverDBController driverController = null;
-    private static UserQueryDBController queryController = null;
 
     static{
         try{
             dbLogHandler = new FileHandler("log.log", false);
             logger.addHandler(dbLogHandler);
-            prop.load(new FileInputStream(new File("config.config")));
 
-            postgres = prop.getProperty("postgres");
-            username = prop.getProperty("user");
-            password = prop.getProperty("password");
+            con = DataSourceFactory.getDataSource("postgres").getConnection();
 
-            Class.forName(driver);
-
-            con = DriverManager.getConnection(postgres, username, password);
             logger.log(Level.INFO, "Connected to DB.");
 
-            userController = new UserDBController(con);
-            driverController = new DriverDBController(con);
-            queryController = new UserQueryDBController(con);
+            UserDBController.setConnection(con);
+            DriverDBController.setConnection(con);
+            UserQueryDBController.setConnection(con);
             logger.log(Level.INFO, "Initialized controller classes for every DB instance.");
-
         } catch (Exception e) { logger.log(Level.SEVERE, "Failed to load required resources and connect to DB. Error message:\n" + e.toString(), e); }
-    }
-
-    public static FileHandler getLogHandler(){
-        return dbLogHandler;
     }
 
     public static boolean saveToDB(Object o){
@@ -100,12 +78,13 @@ public final class DBController {
 
     //register (insert), get (select),
     public static synchronized Object executeUserOperation(String operation, User user) throws SQLException{
-        return userController.execute(operation, user);
+        return UserDBController.execute(operation, user);
     }
     public static synchronized Object executeDriverOperation(String operation, Driver driver) throws SQLException{
-        return driverController.execute(operation, driver);
+        return DriverDBController.execute(operation, driver);
     }
+
     public static synchronized Object executeQueryOperation(String operation, UserQuery query) throws SQLException{
-        return queryController.execute(operation, query);
+        return UserQueryDBController.execute(operation, query);
     }
 }
