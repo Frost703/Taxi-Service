@@ -27,8 +27,13 @@ function login(){
         data: "login="+email+"&password="+pwd+"&type="+type,
         success: function(data){
 			if(data.includes("wrong")) alert("Wrong login or password!");
-			else if(data.includes("user")) window.location="/My Java Projects/Taxi Service/src/main/java/com/projects/taxiservice/gui/user.html";
-			else if(data.includes("driver")) window.location="/My Java Projects/Taxi Service/src/main/java/com/projects/taxiservice/gui/driver.html";
+			else{				
+				localStorage.setItem("token",data);
+				if(type.includes("user")){
+					window.location="/My Java Projects/Taxi Service/src/main/java/com/projects/taxiservice/gui/user.html";
+				} 
+				else window.location="/My Java Projects/Taxi Service/src/main/java/com/projects/taxiservice/gui/driver.html";
+			}
         }
 
     });

@@ -4,7 +4,6 @@ import com.projects.taxiservice.dblogic.dao.DataSourceFactory;
 import com.projects.taxiservice.dblogic.dao.DriverDBController;
 import com.projects.taxiservice.dblogic.dao.UserDBController;
 import com.projects.taxiservice.dblogic.dao.UserQueryDBController;
-import com.projects.taxiservice.taxilogic.MyLogger;
 import com.projects.taxiservice.users.customer.User;
 import com.projects.taxiservice.users.drivers.Driver;
 import com.projects.taxiservice.users.query.UserQuery;
@@ -58,7 +57,6 @@ public final class DBController {
         session.close();
         factory.close();
 
-        MyLogger.addToLog("Successfully added object to DB: " + o.toString());
         return true;
     }
 
@@ -72,7 +70,6 @@ public final class DBController {
         session.close();
         factory.close();
 
-        MyLogger.addToLog("Successfully returned object from DB: " + o.toString());
         return (T)o;
     }
 

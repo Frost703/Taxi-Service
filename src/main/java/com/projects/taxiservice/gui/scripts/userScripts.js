@@ -8,8 +8,21 @@ $(".chat").on({click:openChatWithDriver});
 
 });
 
-function callCab(){
-	alert("Call Cab");
+function emptyStorage(){
+	localStorage.removeItem("token");
+	alert("removed");
+}
+
+function callCab(){	
+	$.ajax({
+        type: "POST",
+        url: "http://localhost:8080/user",
+        data: "token="+localStorage.getItem("token"),
+        success: function(data){
+			alert(data);
+        }
+
+    });
 }
 
 function cancelRequest(){

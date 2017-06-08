@@ -25,6 +25,8 @@ public class Driver implements DBManageable {
     private String login, password, name;
     private Car car;
 
+    public static final Driver EMPTY = new Driver().setId(-1);
+
     public Car getCar() {
         return car;
     }

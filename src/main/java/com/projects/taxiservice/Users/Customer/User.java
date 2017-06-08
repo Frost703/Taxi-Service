@@ -15,6 +15,8 @@ public class User implements DBManageable {
     private List<UserQuery> queries = new ArrayList<UserQuery>();
     private UserQuery activeQuery;
 
+    public static final User EMPTY = new User().setId(-1);
+
     public int getId() {
         return id;
     }
