@@ -1,4 +1,4 @@
-package com.projects.taxiservice.dblogic.dao;
+package com.projects.taxiservice.dblogic;
 
 import org.postgresql.ds.PGPoolingDataSource;
 

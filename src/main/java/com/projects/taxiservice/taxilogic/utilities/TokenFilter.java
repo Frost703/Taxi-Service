@@ -16,13 +16,16 @@ public final class TokenFilter {
     private static Map<String, SessionInformation<User>> userSessions = new HashMap<>();
     private static Map<String, SessionInformation<Driver>> driverSessions = new HashMap<>();
 
-    private static ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
+    private static ScheduledExecutorService exec = Executors.newScheduledThreadPool(2);
     static {
-        Runnable task = () -> checkAndRemoveExpiredSessions(LocalDateTime.now());
-        exec.scheduleAtFixedRate(task, 0, 5, TimeUnit.MINUTES);
+        Runnable userTask = () -> checkAndRemoveExpiredUserSessions(LocalDateTime.now());
+        Runnable driverTask = () -> checkAndRemoveExpiredDriverSessions(LocalDateTime.now());
+        exec.scheduleAtFixedRate(userTask, 0, 5, TimeUnit.SECONDS);
+        exec.scheduleAtFixedRate(driverTask, 0, 5, TimeUnit.SECONDS);
     }
 
-    private static int hoursToExpire = 5;
+    private static final int hoursToExpireUserToken = 1;
+    private static final int hoursToExpireDriverToken = 10;
 
     private static class SessionInformation <T>{
         T object;
@@ -46,11 +49,13 @@ public final class TokenFilter {
     }
 
     public static boolean isUserSession(String key){
+        if(key == null || key.length() < 1) return false;
         if(userSessions.containsKey(key)) return true;
         else return false;
     }
 
     public static boolean isDriverSession(String key){
+        if(key == null || key.length() < 1) return false;
         if(driverSessions.containsKey(key)) return true;
         else return false;
     }
@@ -58,7 +63,7 @@ public final class TokenFilter {
     public static void addUserSession(String key, User user){
         SessionInformation<User> info = new SessionInformation<>();
         info.setObject(user);
-        info.setExpirationDate(LocalDateTime.now().plusHours(hoursToExpire));
+        info.setExpirationDate(LocalDateTime.now().plusHours(hoursToExpireUserToken));
 
         userSessions.put(key, info);
     }
@@ -66,7 +71,7 @@ public final class TokenFilter {
     public static void addDriverSession(String key, Driver driver){
         SessionInformation<Driver> info = new SessionInformation<>();
         info.setObject(driver);
-        info.setExpirationDate(LocalDateTime.now().plusHours(hoursToExpire));
+        info.setExpirationDate(LocalDateTime.now().plusHours(hoursToExpireDriverToken));
 
         driverSessions.put(key, info);
     }
@@ -85,24 +90,31 @@ public final class TokenFilter {
         return true;
     }
 
-    private static void checkAndRemoveExpiredSessions(LocalDateTime now){
-        if(now.isAfter(LocalDateTime.now())) throw new IllegalArgumentException("Future sessions can't be removed. Date is after current date");
+    public static User getUser(String key){
+        if(!isUserSession(key)) return User.EMPTY;
+        else return userSessions.get(key).getObject();
+    }
 
+    public static Driver getDriver(String key){
+        if(!isDriverSession(key)) return Driver.EMPTY;
+        else return driverSessions.get(key).getObject();
+    }
+
+    private static void checkAndRemoveExpiredUserSessions(LocalDateTime now){
         Set<String> expiredUserTokens = new HashSet<>();
-        Set<String> expiredDriverTokens = new HashSet<>();
-
         userSessions.forEach( (k,v) -> {
             if(v.getExpirationDate().isBefore(now)) expiredUserTokens.add(k);
         });
 
+        if(expiredUserTokens.size() > 0) expiredUserTokens.forEach(userSessions::remove);
+    }
+
+    private static void checkAndRemoveExpiredDriverSessions(LocalDateTime now){
+        Set<String> expiredDriverTokens = new HashSet<>();
         driverSessions.forEach((k,v) -> {
             if(v.getExpirationDate().isBefore(now)) expiredDriverTokens.add(k);
         });
 
-        if(expiredUserTokens.size() > 0){
-            expiredUserTokens.forEach(userSessions::remove);
-        }
         if(expiredDriverTokens.size() > 0) expiredDriverTokens.forEach(driverSessions::remove);
-
     }
 }

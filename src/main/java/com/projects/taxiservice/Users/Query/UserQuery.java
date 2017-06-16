@@ -16,14 +16,20 @@ public class UserQuery implements DBManageable {
     private User customer;
     private Driver driver;
 
-    private LocalDateTime created = LocalDateTime.now(), activated, closed;
+    private LocalDateTime created, activated, closed;
 
     private String name;
     private String address;
-    private String additionalInformation;
+    private String additionalInformation, feedback;
     private String phoneNumber;
     private CarClass carClass;
     private QueryStatus status;
+
+    public static UserQuery EMPTY = new UserQuery().setId(-1);
+
+    public UserQuery(){
+        created = LocalDateTime.now();
+    }
 
     public QueryStatus getStatus() {
         return status;
@@ -128,5 +134,14 @@ public class UserQuery implements DBManageable {
 
     public void setClosed(LocalDateTime closed) {
         this.closed = closed;
+    }
+
+    public String getFeedback() {
+        return feedback;
+    }
+
+    public UserQuery setFeedback(String feedback) {
+        this.feedback = feedback;
+        return this;
     }
 }

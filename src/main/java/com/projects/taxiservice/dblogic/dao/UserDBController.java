@@ -2,6 +2,7 @@ package com.projects.taxiservice.dblogic.dao;
 
 import com.projects.taxiservice.dblogic.DBController;
 import com.projects.taxiservice.users.customer.User;
+import com.projects.taxiservice.users.query.UserQuery;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -121,5 +122,4 @@ public final class UserDBController {
             throw e;
         }
     }
-
 }

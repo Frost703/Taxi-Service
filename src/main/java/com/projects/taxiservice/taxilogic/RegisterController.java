@@ -66,16 +66,7 @@ public class RegisterController {
         car.setCarNumber(req.getParameter("plate"));
 
         String carType = req.getParameter("car");
-        switch(carType.trim().toLowerCase()) {
-            case "regular":
-                car.setCarClass(CarClass.REGULAR);
-                break;
-            case "family" : car.setCarClass(CarClass.FAMILYSIZE);
-                break;
-            case "vip" : car.setCarClass(CarClass.VIPCLASS);
-                break;
-            default : car.setCarClass(CarClass.REGULAR);
-        }
+        car.setCarClass(Car.getCarClass(carType));
         driver.setCar(car);
 
         try{

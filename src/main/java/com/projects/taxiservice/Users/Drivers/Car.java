@@ -48,4 +48,13 @@ public class Car {
     public void setId(int id) {
         this.id = id;
     }
+
+    public static CarClass getCarClass(String car){
+        switch(car.toUpperCase()){
+            case "REGULAR" : return CarClass.REGULAR;
+            case "FAMILY" : return CarClass.FAMILYSIZE;
+            case "VIP" : return CarClass.VIPCLASS;
+            default: return CarClass.REGULAR;
+        }
+    }
 }

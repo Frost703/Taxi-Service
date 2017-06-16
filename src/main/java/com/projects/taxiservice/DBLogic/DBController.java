@@ -1,6 +1,5 @@
 package com.projects.taxiservice.dblogic;
 
-import com.projects.taxiservice.dblogic.dao.DataSourceFactory;
 import com.projects.taxiservice.dblogic.dao.DriverDBController;
 import com.projects.taxiservice.dblogic.dao.UserDBController;
 import com.projects.taxiservice.dblogic.dao.UserQueryDBController;

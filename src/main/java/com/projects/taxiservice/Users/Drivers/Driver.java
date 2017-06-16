@@ -1,9 +1,12 @@
 package com.projects.taxiservice.users.drivers;
 
 import com.projects.taxiservice.dblogic.DBManageable;
+import com.projects.taxiservice.users.query.UserQuery;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by O'Neill on 6/30/2016.
@@ -24,6 +27,9 @@ public class Driver implements DBManageable {
     private LocalDate drivingSince;
     private String login, password, name;
     private Car car;
+
+    private List<UserQuery> queries = new ArrayList<UserQuery>();
+    private UserQuery activeQuery;
 
     public static final Driver EMPTY = new Driver().setId(-1);
 
@@ -79,6 +85,22 @@ public class Driver implements DBManageable {
     public Driver setDrivingSince(LocalDate drivingSince) {
         this.drivingSince = drivingSince;
         return this;
+    }
+
+    public List<UserQuery> getQueries() {
+        return queries;
+    }
+
+    public void setQueries(List<UserQuery> queries) {
+        this.queries = queries;
+    }
+
+    public UserQuery getActiveQuery() {
+        return activeQuery;
+    }
+
+    public void setActiveQuery(UserQuery activeQuery) {
+        this.activeQuery = activeQuery;
     }
 
     @Override

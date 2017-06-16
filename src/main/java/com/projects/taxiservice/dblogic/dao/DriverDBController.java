@@ -86,16 +86,7 @@ public final class DriverDBController {
                     car.setCarNumber(rs.getString("plate"));
 
                     String carType = rs.getString("class");
-                    switch(carType) {
-                        case "regular":
-                            car.setCarClass(CarClass.REGULAR);
-                            break;
-                        case "family" : car.setCarClass(CarClass.FAMILYSIZE);
-                            break;
-                        case "vip" : car.setCarClass(CarClass.VIPCLASS);
-                            break;
-                        default : car.setCarClass(CarClass.REGULAR);
-                    }
+                    car.setCarClass(Car.getCarClass(carType));
                 }
                 driverStored.setCar(car);
             }
