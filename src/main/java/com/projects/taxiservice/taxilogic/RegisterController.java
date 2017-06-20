@@ -1,9 +1,9 @@
 package com.projects.taxiservice.taxilogic;
 
-import com.projects.taxiservice.dblogic.DBController;
+import com.projects.taxiservice.dblogic.dao.DriverDBController;
+import com.projects.taxiservice.dblogic.dao.UserDBController;
 import com.projects.taxiservice.users.customer.User;
 import com.projects.taxiservice.users.drivers.Car;
-import com.projects.taxiservice.users.drivers.CarClass;
 import com.projects.taxiservice.users.drivers.Driver;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,7 +42,7 @@ public class RegisterController {
 
         try{
             System.out.println("Before user db operation");
-            user = (User)DBController.executeUserOperation("register", user);
+            user = UserDBController.insertUser(user);
             System.out.println("After user db operation");
             if(user.getId() < 1) throw new SQLException("Failed to register new user!");
         }catch(SQLException e){
@@ -70,7 +70,7 @@ public class RegisterController {
         driver.setCar(car);
 
         try{
-            driver = (Driver)DBController.executeDriverOperation("register", driver);
+            driver = DriverDBController.insertDriver(driver);
             if(driver.getId() < 1) throw new SQLException("Failed to register new driver!");
         }catch(SQLException e){
             return "Fail. Exception: " + e.getMessage();

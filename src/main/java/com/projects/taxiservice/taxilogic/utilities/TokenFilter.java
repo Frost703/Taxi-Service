@@ -92,7 +92,9 @@ public final class TokenFilter {
 
     public static User getUser(String key){
         if(!isUserSession(key)) return User.EMPTY;
-        else return userSessions.get(key).getObject();
+
+        User user = userSessions.get(key).getObject();
+        return user;
     }
 
     public static Driver getDriver(String key){
@@ -103,7 +105,9 @@ public final class TokenFilter {
     private static void checkAndRemoveExpiredUserSessions(LocalDateTime now){
         Set<String> expiredUserTokens = new HashSet<>();
         userSessions.forEach( (k,v) -> {
-            if(v.getExpirationDate().isBefore(now)) expiredUserTokens.add(k);
+            if(v.getExpirationDate().isBefore(now)) {
+                expiredUserTokens.add(k);
+            }
         });
 
         if(expiredUserTokens.size() > 0) expiredUserTokens.forEach(userSessions::remove);

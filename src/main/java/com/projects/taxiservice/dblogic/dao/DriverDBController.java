@@ -21,30 +21,16 @@ public final class DriverDBController {
 
     private DriverDBController() {}
 
+    static{
+        setConnection(DBController.getConnection());
+    }
+
     public static void setConnection(Connection connection) {
         if(connection == null) throw new IllegalArgumentException("Connection object cannot be null!");
         con = connection;
     }
 
-    public static List<String> getListOfAvailableOperations(){
-        return Arrays.asList("register->inserts into DB", "get->selects by id or login");
-    }
-
-    public static Object execute(String operation, Driver driver) throws SQLException {
-        Object output = null;
-        switch(operation.toLowerCase()){
-            case "get" : output = selectDriver(driver);
-                break;
-            case "register" : output = insertDriver(driver);
-                break;
-            default: output = null;
-                throw new IllegalArgumentException("Operation not recognized! Operation: " + operation);
-        }
-
-        return output;
-    }
-
-    private static Driver selectDriver(Driver driver) throws SQLException{
+    public static Driver selectDriver(Driver driver) throws SQLException{
         if(driver == null) throw new IllegalArgumentException("Can't perform select driver statement. Passed Driver object is null");
         if(driver.getId() < 1 && (driver.getLogin() == null || driver.getLogin().length() < 3))
             throw new IllegalArgumentException("Can't perform select driver statement. Id or login must be provided");
@@ -100,7 +86,7 @@ public final class DriverDBController {
         }
     }
 
-    private static Driver insertDriver(Driver driver) throws SQLException {
+    public static Driver insertDriver(Driver driver) throws SQLException {
         String insertDriver = "INSERT INTO \"drivers\" " +
                 "(login, password, name, drivingsince, carid) VALUES " +
                 "(?,?,?,?,?);";

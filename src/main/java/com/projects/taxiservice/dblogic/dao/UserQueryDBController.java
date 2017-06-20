@@ -6,9 +6,9 @@ import com.projects.taxiservice.users.drivers.CarClass;
 import com.projects.taxiservice.users.drivers.Driver;
 import com.projects.taxiservice.users.query.QueryStatus;
 import com.projects.taxiservice.users.query.UserQuery;
-import org.hibernate.criterion.Subqueries;
 
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +18,10 @@ import java.util.List;
 public final class UserQueryDBController {
     private static Connection con;
 
+    static{
+        setConnection(DBController.getConnection());
+    }
+
     private UserQueryDBController() {}
 
     public static void setConnection(Connection connection) {
@@ -25,21 +29,11 @@ public final class UserQueryDBController {
         con = connection;
     }
 
-    public static UserQuery execute(String operation, UserQuery userQuery) throws SQLException{
-        Object output;
-        switch(operation.toUpperCase()){
-            case "getUserHistory" : output = getUserHistory(userQuery); break;
-            case "save": output = insertQuery(userQuery); break;
-            default: throw new IllegalArgumentException("Operation not recognized! Operation: " + operation);
-        }
-        return userQuery;
-    }
-
-    private static List<UserQuery> getUserHistory(UserQuery query) throws SQLException{
+    public static List<UserQuery> getUserHistory(UserQuery query) throws SQLException{
         int id = query.getCustomer().getId();
         if(id < 1) throw new IllegalArgumentException("User's id is < 1");
 
-        String selectLastQueries = "SELECT * FROM \"query\" WHERE user=? ORDER BY id DESC LIMIT 4;";
+        String selectLastQueries = "SELECT * FROM \"query\" WHERE \"user\"=? ORDER BY id DESC LIMIT 4;";
         List<UserQuery> queries = new ArrayList<>(5);
 
         try(PreparedStatement st = con.prepareStatement(selectLastQueries)){
@@ -47,19 +41,24 @@ public final class UserQueryDBController {
             ResultSet rs = st.executeQuery();
             while(rs.next()){
                 UserQuery selectedQuery = new UserQuery();
+                selectedQuery.setId(rs.getInt("id"));
                 selectedQuery.setName(rs.getString("username"));
                 selectedQuery.setPhoneNumber(rs.getString("phone"));
-                selectedQuery.setCustomer(query.getCustomer());
+                selectedQuery.setCustomer(new User().setId(rs.getInt("user")));
                 selectedQuery.setCreated(rs.getTimestamp("created").toLocalDateTime());
-                selectedQuery.setActivated(rs.getTimestamp("activated").toLocalDateTime());
-                selectedQuery.setClosed(rs.getTimestamp("created").toLocalDateTime());
+
+                Timestamp timeActivated = rs.getTimestamp("activated");
+                if(timeActivated != null)
+                    selectedQuery.setActivated(timeActivated.toLocalDateTime());
+
+                Timestamp timeClosed = rs.getTimestamp("created");
+                if(timeClosed != null)
+                    selectedQuery.setClosed(timeClosed.toLocalDateTime());
+
                 selectedQuery.setCarClass(CarClass.valueOf(rs.getString("carClass").toUpperCase()));
                 selectedQuery.setId(rs.getInt("id"));
 
                 Driver driver = new Driver().setId(rs.getInt("driver"));
-                try{
-                    driver = (Driver)DBController.executeDriverOperation("get", driver);
-                } catch (SQLException sqe) { sqe.printStackTrace(); driver = Driver.EMPTY; }
 
                 selectedQuery.setDriver(driver);
                 selectedQuery.setAddress(rs.getString("address"));
@@ -75,10 +74,31 @@ public final class UserQueryDBController {
         return queries;
     }
 
-    private static int insertQuery(UserQuery query) throws SQLException{
+    public static int insertFromUserInput(UserQuery query) throws SQLException{
         if(query == null) throw new IllegalArgumentException("Can't insert a null query.");
         String insertQuery = "INSERT INTO \"query\" " +
-                "(activated, additional, address, carclass, closed, created, driver, feedback, phone, status, user, username) " +
+                "(additional, address, carclass, created, feedback, phone, status, \"user\", username) " +
+                "VALUES (?,?,?,?,?,?,?,?,?);";
+
+        try(PreparedStatement st = con.prepareStatement(insertQuery)){
+            st.setString(1, query.getAdditionalInformation());
+            st.setString(2, query.getAddress());
+            st.setString(3, query.getCarClass().toString().toLowerCase());
+            st.setTimestamp(4, Timestamp.valueOf(query.getCreated()));
+            st.setString(5, query.getFeedback());
+            st.setString(6, query.getPhoneNumber());
+            st.setString(7, query.getStatus().toString().toLowerCase());
+            st.setInt(8, query.getCustomer().getId());
+            st.setString(9, query.getCustomer().getName());
+
+            return st.executeUpdate();
+        }
+    }
+
+    public static int insertQuery(UserQuery query) throws SQLException{
+        if(query == null) throw new IllegalArgumentException("Can't insert a null query.");
+        String insertQuery = "INSERT INTO \"query\" " +
+                "(activated, additional, address, carclass, closed, created, \"driver\", feedback, phone, status, \"user\", username) " +
                 "VALUES (?,?,?,?,?,?,?,?,?,?,?,?);";
 
         try(PreparedStatement st = con.prepareStatement(insertQuery)){
@@ -94,6 +114,33 @@ public final class UserQueryDBController {
             st.setString(10, query.getStatus().toString().toLowerCase());
             st.setInt(11, query.getCustomer().getId());
             st.setString(12, query.getCustomer().getName());
+
+            return st.executeUpdate();
+        }
+    }
+
+    public static int closeQuery(UserQuery query, QueryStatus status) throws SQLException{
+        int id = query.getId();
+        if(id < 1) throw new IllegalArgumentException("id < 1");
+
+        String update = "UPDATE \"query\" SET status=?, closed=? WHERE id=?";
+        try(PreparedStatement st = con.prepareStatement(update)){
+            st.setString(1, status.toString().toLowerCase());
+            st.setTimestamp(2, Timestamp.valueOf(LocalDateTime.now()));
+            st.setInt(3, id);
+
+            return st.executeUpdate();
+        }
+    }
+
+    public static int updateFeedback(UserQuery query, String feedback) throws SQLException{
+        int id = query.getId();
+        if(id < 1) throw new IllegalArgumentException("id < 1");
+
+        String update = "UPDATE \"query\" SET feedback=? WHERE id=?";
+        try(PreparedStatement st = con.prepareStatement(update)){
+            st.setString(1, feedback);
+            st.setInt(2, id);
 
             return st.executeUpdate();
         }

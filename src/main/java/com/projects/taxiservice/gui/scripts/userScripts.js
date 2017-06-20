@@ -1,14 +1,25 @@
 $(document).ready(function addHandler(){
-	
-$("#cab").on({click:callCab});
-$(".cancel").on({click:cancelRequest});
-$(".feedback").on({click:leaveFeedback});
-$(".direct").on({click:directCabRequest});
-$(".chat").on({click:openChatWithDriver});
 
 loadUserInformation();
 getRequestHistory();
+	
+addButtonHandlers();
+
 });
+
+function addButtonHandlers(){
+    $("#cab").on({click:callCab});
+    $(".cancel").on({click:function(){
+                        cancelRequest($(this));
+                        }
+                    });
+    $(".feedback").on({click:function(){
+                        leaveFeedback($(this));
+                        }
+                    });
+    //$(".direct").on({click:directCabRequest});
+    //$(".chat").on({click:openChatWithDriver});
+}
 
 function loadUserInformation(){
     $.ajax({
@@ -16,21 +27,18 @@ function loadUserInformation(){
             url: "http://localhost:8080/user/info",
             data: "token="+localStorage.getItem("token"),
             success: function(data){
-    			alert(data);
     			if(isValidToken(data)) {
-                    var name = $("#inputName").val(data.name);
-                    var phone = $("#inputPhone").val(data.phone);
-                    var address = $("#inputAddress").val(data.address);
+                    $("#inputName").val(data.name);
+                    $("#inputPhone").val(data.phone);
+                    $("#inputAddress").val(data.address);
                 }
             }
-
         });
 }
 
 //empty html5 storage with user's token
 function emptyStorage(){
 	localStorage.removeItem("token");
-	alert("removed");
 }
 
 //1.1
@@ -48,12 +56,10 @@ function callCab(){
         url: "http://localhost:8080/user/call",
         data: data+"&token="+localStorage.getItem("token"),
         success: function(data){
-			alert(data);
 			if(isValidToken(data)) {
 			    if(data.includes("success")) getRequestHistory();
 			}
         }
-
     });
 }
 
@@ -64,81 +70,129 @@ function getRequestHistory(){
         url: "http://localhost:8080/user/history",
         data: "token="+localStorage.getItem("token"),
         success: function(data){
-			alert(data);
 			if(isValidToken(data)) {
 			    displayRequestHistory(data);
 			}
         }
-
     });
 }
 
 //2.2
-                                    function displayRequestHistory(data){
-                                        var html = "history data here";
-                                        for(int i=0; i < data.length; i++){
-                                            html+= data[i];
-                                        }
-                                        $("#history").html(html);
-                                    }
-
-//3.1 Not for prototype edition
-function getAvailableDrivers(){
-    $.ajax({
-            type: "GET",
-            url: "http://localhost:8080/user/available",
-            data: "token="+localStorage.getItem("token"),
-            success: function(data){
-    			alert(data);
-    			if(isValidToken(data)) {
-    			    displayAvailableDrivers(data);
-                }
-            }
-        });
+function displayRequestHistory(data){
+    var html = "history data here<table>";
+    html+="<tr><td>Status</td><td>Requests</td><td>Driver</td><td>Action</td></tr>";
+    for(i=0; i < data.length; i++){
+        var status = data[i].status;
+        var date = data[i].created;
+        var hour = date.hour; var minute = date.minute; var second = date.second;
+        var driver = data[i].driver.id;
+        var feedback = data[i].feedback;
+        var button = "";
+        if(feedback == null) button = status.includes("ACTIVE") ? getButton("cancel") : getButton("feedback");
+        html+= '<tr><td id="queryId" style="display:none">'+data[i].id+"</td><td>"+status + "</td><td>" + hour+":"+minute+":"+second + "</td><td>" + driver+"</td><td>"+ button +"</td></tr>";
+    }
+    $("#history").html(html+"</table>");
+    addButtonHandlers();
 }
 
+function getButton(text){
+    return '<input type="button" class="'+text+'" value="'+text+'">';
+}
+
+//3.1 Not for prototype edition
+//function getAvailableDrivers(){
+//    $.ajax({
+//            type: "GET",
+//            url: "http://localhost:8080/user/available",
+//            data: "token="+localStorage.getItem("token"),
+//            success: function(data){
+//    			alert(data);
+//    			if(isValidToken(data)) {
+//    			    displayAvailableDrivers(data);
+//                }
+//            }
+//        });
+//}
+
 //3.2
-                                        function displayAvailableDrivers(data){
-                                            var html = "available drivers here";
-                                            for(int i=0; i < data.length; i++){
-                                                html+= data[i];
-                                            }
-                                            #("#availableDrivers").html(html);
-                                        }
+//                                        function displayAvailableDrivers(data){
+//                                            var html = "available drivers here";
+//                                            for(int i=0; i < data.length; i++){
+//                                                html+= data[i];
+//                                            }
+//                                            #("#availableDrivers").html(html);
+//                                        }
 
 
-                                        function cancelRequest(){
-                                            alert("Cancel Request");
-                                        }
+function cancelRequest(elem){
+    var id = elem.closest("tr").find("td").html();
+    if(id > 0) {
 
-                                        function leaveFeedback(){
-                                            alert("Leave Feedback");
-                                        }
+        data = "id="+id;
+        $.ajax({
+                type: "POST",
+                url: "http://localhost:8080/user/cancel",
+                data: data+"&token="+localStorage.getItem("token"),
+                success: function(data){
+                    if(isValidToken(data)) {
+                        if(data.includes("success")) getRequestHistory();
+                    }
+                }
+            });
+    } else alert("Error on cancelling");
+}
 
-                                        function directCabRequest(){
-                                            alert("Requesting a specific driver");
-                                        }
+function leaveFeedback(elem){
+    var id = elem.closest("tr").find("td").html();
+        if(id > 0) {
+            var feedback = prompt("Please leave your feedback", "Great service!");
+            if(feedback.length > 0) {
+                data = "id="+id+"&feedback="+feedback;
+                $.ajax({
+                        type: "POST",
+                        url: "http://localhost:8080/user/feedback",
+                        data: data+"&token="+localStorage.getItem("token"),
+                        success: function(data){
+                            if(isValidToken(data)) {
+                                if(data.includes("success")) getRequestHistory();
+                            }
+                        }
+                    });
+            }
+            } else alert("Error on cancelling");
+}
 
-                                        function openChatWithDriver(){
-                                            alert("Open chat with a specific driver");
-                                        }
+//                                        function directCabRequest(){
+//                                            alert("Requesting a specific driver");
+//                                        }
+
+//                                        function openChatWithDriver(){
+//                                            alert("Open chat with a specific driver");
+//                                        }
 
 function isValidToken(data){
+    if(typeof data === 'object') {
+        return true;
+    }
+
     if(data.includes("Token not recognized")) {
         promptToLogin();
         return false;
     }
-    else return true;
+    else{
+        return true;
+    }
 }
 
 function promptToLogin(){
-    alert("Session expired. Please, press OK to login to your account again");
-    //Prompt user, not alert. Redirect user to login page
-    emptyStorage();
+    if(confirm("Session expired. Please, press OK to login to your account again")) {
+        emptyStorage();
+        window.location = "/My Java Projects/Taxi Service/src/main/java/com/projects/taxiservice/gui/login.html";
+    }
 }
 
 function validateInput(string){
-    var symbols = ['#','$','%','^','&','_','/','\\','|','',';',':'];
+    var symbols = ['#','$','%','^','&','_','/','\\','|','\'',';',':'];
     for(i=0; i<symbols.length; i++) string = string.replace(symbols[i], "");
     return string;
 }

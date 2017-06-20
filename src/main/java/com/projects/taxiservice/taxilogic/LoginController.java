@@ -1,12 +1,13 @@
 package com.projects.taxiservice.taxilogic;
 
-import com.projects.taxiservice.dblogic.DBController;
+import com.projects.taxiservice.dblogic.dao.DriverDBController;
+import com.projects.taxiservice.dblogic.dao.UserDBController;
 import com.projects.taxiservice.taxilogic.utilities.RandomTokenGen;
+import com.projects.taxiservice.taxilogic.utilities.TokenFilter;
 import com.projects.taxiservice.users.customer.User;
 import com.projects.taxiservice.users.drivers.Driver;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.sql.SQLException;
@@ -37,12 +38,8 @@ public class LoginController {
             User user = loginUser(login, password);
             if(user.getId() > 0) {
                 String secureToken = RandomTokenGen.getSecureToken();
-//                Cookie token = new Cookie("token", secureToken);
-//                token.setMaxAge(60*60*5);
-//                resp.addCookie(token);
-//                System.out.println("Token for current user is: " + secureToken);
-                //TokenFilter.removeUserSession(userSessionKey);
-                //TokenFilter.addUserSession(userSessionKey, user);
+                if(TokenFilter.isUserSession(secureToken)) TokenFilter.removeUserSession(secureToken);
+                TokenFilter.addUserSession(secureToken, user);
 
                 return secureToken;
             }
@@ -70,7 +67,7 @@ public class LoginController {
                 .setPassword(password);
 
         try {
-            User user = (User)DBController.executeUserOperation("get", customer);
+            User user = UserDBController.selectUser(customer);
 
             if(user.getId() < 1) return User.EMPTY;
             else{
@@ -89,7 +86,7 @@ public class LoginController {
                 .setPassword(password);
 
         try{
-            Driver driverStored = (Driver)DBController.executeDriverOperation("get", driver);
+            Driver driverStored = DriverDBController.selectDriver(driver);
 
             if(driverStored.getId() < 1) return Driver.EMPTY;
             else return driverStored;

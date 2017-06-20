@@ -16,7 +16,7 @@ $("#showpass").on({click:function(){
 });
 
 
-function login(){ 
+function log_in(){
 	var email = $("#login").val();
 	var pwd = $("#password").val();
 	var type = $("input[name=type]:checked").val();

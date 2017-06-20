@@ -20,6 +20,10 @@ public final class UserDBController {
     private static Connection con;
     private static final Logger logger = Logger.getLogger(DBController.class.getName());
 
+    static{
+        setConnection(DBController.getConnection());
+    }
+
     public static void setConnection(Connection connection){
         if(connection == null) throw new IllegalArgumentException("Connection object cannot be null!");
         con = connection;
@@ -27,24 +31,7 @@ public final class UserDBController {
 
     private UserDBController() {}
 
-    public static List<String> getListOfAvailableOperations(){
-        return Arrays.asList("register->inserts into DB", "get->selects by id or login");
-    }
-
-    public static Object execute(String operation, User user) throws SQLException{
-        Object output;
-        switch(operation.toLowerCase()){
-            case "register": output = insertUser(user); break;
-            case "get": output = selectUser(user); break;
-            default: output = null;
-                logger.log(Level.INFO, "Operation not recognized. Returning a null object. Operation: {0}", operation);
-                throw new IllegalArgumentException("Operation not recognized! Operation: " + operation);
-        }
-
-        return output;
-    }
-
-    private static User insertUser(User user) throws SQLException{
+    public static User insertUser(User user) throws SQLException{
         String insertOperation = "INSERT INTO \"users\" " +
                 "(login, password, phone, name, address) VALUES " +
                 "(?, ?, ?, ?, ?);";
@@ -84,7 +71,7 @@ public final class UserDBController {
         return user;
     }
 
-    private static User selectUser(User user) throws SQLException{
+    public static User selectUser(User user) throws SQLException{
         try {
             if (user == null)
                 throw new IllegalArgumentException("Can't perform select user statement. Passed User object is null");
