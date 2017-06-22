@@ -40,33 +40,7 @@ public final class UserQueryDBController {
             st.setInt(1, id);
             ResultSet rs = st.executeQuery();
             while(rs.next()){
-                UserQuery selectedQuery = new UserQuery();
-                selectedQuery.setId(rs.getInt("id"));
-                selectedQuery.setName(rs.getString("username"));
-                selectedQuery.setPhoneNumber(rs.getString("phone"));
-                selectedQuery.setCustomer(new User().setId(rs.getInt("user")));
-                selectedQuery.setCreated(rs.getTimestamp("created").toLocalDateTime());
-
-                Timestamp timeActivated = rs.getTimestamp("activated");
-                if(timeActivated != null)
-                    selectedQuery.setActivated(timeActivated.toLocalDateTime());
-
-                Timestamp timeClosed = rs.getTimestamp("created");
-                if(timeClosed != null)
-                    selectedQuery.setClosed(timeClosed.toLocalDateTime());
-
-                selectedQuery.setCarClass(CarClass.valueOf(rs.getString("carClass").toUpperCase()));
-                selectedQuery.setId(rs.getInt("id"));
-
-                Driver driver = new Driver().setId(rs.getInt("driver"));
-
-                selectedQuery.setDriver(driver);
-                selectedQuery.setAddress(rs.getString("address"));
-                selectedQuery.setAdditionalInformation(rs.getString("additional"));
-                selectedQuery.setFeedback(rs.getString("feedback"));
-                selectedQuery.setStatus(QueryStatus.valueOf(rs.getString("status").toUpperCase()));
-
-                queries.add(selectedQuery);
+                queries.add(extractUserQuery(rs));
             }
 
             rs.close();
@@ -143,6 +117,132 @@ public final class UserQueryDBController {
             st.setInt(2, id);
 
             return st.executeUpdate();
+        }
+    }
+
+    public static int getDriverStatistics(int driverId) throws SQLException{
+        if(driverId < 1) throw new IllegalArgumentException("id < 1");
+
+        String getTodayOrderCount = "SELECT COUNT(*) FROM \"query\" WHERE \"driver\"=?;";
+        int result = 0;
+        try(PreparedStatement st = con.prepareStatement(getTodayOrderCount)){
+            st.setInt(1, driverId);
+
+            ResultSet rs = st.executeQuery();
+            if(rs.next()){
+                result = rs.getInt(1);
+            }
+
+            rs.close();
+        }
+
+        return result;
+    }
+
+    public static UserQuery selectQuery(int id) throws SQLException{
+        if(id < 1) throw new IllegalArgumentException("id < 1");
+
+        UserQuery output = UserQuery.EMPTY;
+        String select = "SELECT * FROM \"query\" WHERE id=?;";
+        try(PreparedStatement st = con.prepareStatement(select)){
+            st.setInt(1, id);
+            ResultSet rs = st.executeQuery();
+            if(rs.next()){
+                output = extractUserQuery(rs);
+            }
+            rs.close();
+        }
+        return output;
+    }
+
+    public static int updateQueryStatus(int id, QueryStatus activeStatus) throws SQLException{
+        if(id < 1) throw new IllegalArgumentException("id < 1");
+
+        String updateStatus = "UPDATE \"query\" SET status=? WHERE id=?;";
+        try(PreparedStatement st = con.prepareStatement(updateStatus)){
+            st.setString(1, activeStatus.toString().toLowerCase());
+            st.setInt(2, id);
+
+            return st.executeUpdate();
+        }
+    }
+
+    public static List<UserQuery> selectActiveQueries() throws SQLException{
+        String selectActive = "SELECT * FROM \"query\" WHERE status='active'";
+        try(PreparedStatement st = con.prepareStatement(selectActive);
+            ResultSet rs = st.executeQuery()){
+
+            ArrayList<UserQuery> activeQueries = new ArrayList<>();
+            while(rs.next()){
+                activeQueries.add(extractUserQuery(rs));
+            }
+
+            return activeQueries;
+        }
+    }
+
+    public static UserQuery extractUserQuery(ResultSet rs) throws SQLException{
+        UserQuery selectedQuery = new UserQuery();
+
+        selectedQuery.setId(rs.getInt("id"));
+        selectedQuery.setName(rs.getString("username"));
+        selectedQuery.setPhoneNumber(rs.getString("phone"));
+        selectedQuery.setCustomer(new User().setId(rs.getInt("user")));
+        selectedQuery.setCreated(rs.getTimestamp("created").toLocalDateTime());
+
+        Timestamp timeActivated = rs.getTimestamp("activated");
+        if(timeActivated != null)
+            selectedQuery.setActivated(timeActivated.toLocalDateTime());
+
+        Timestamp timeClosed = rs.getTimestamp("created");
+        if(timeClosed != null)
+            selectedQuery.setClosed(timeClosed.toLocalDateTime());
+
+        selectedQuery.setCarClass(CarClass.valueOf(rs.getString("carclass").toUpperCase()));
+        selectedQuery.setId(rs.getInt("id"));
+
+        Driver driver = new Driver().setId(rs.getInt("driver"));
+
+        selectedQuery.setDriver(driver);
+        selectedQuery.setAddress(rs.getString("address"));
+        selectedQuery.setAdditionalInformation(rs.getString("additional"));
+        selectedQuery.setFeedback(rs.getString("feedback"));
+        selectedQuery.setStatus(QueryStatus.valueOf(rs.getString("status").toUpperCase()));
+
+        return selectedQuery;
+    }
+
+    public static int updateQueryDriver(int id, int driver) throws SQLException{
+        if(id < 1) throw new IllegalArgumentException("id < 1");
+        if(driver < 1) throw new IllegalArgumentException("driver id < 1");
+
+        String updateDriver = "UPDATE \"query\" SET \"driver\"=? WHERE id=?;";
+        int result = 1;
+        try(PreparedStatement st = con.prepareStatement(updateDriver)){
+            st.setInt(1, driver);
+            st.setInt(2, id);
+
+            result *= st.executeUpdate();
+        }
+
+        return result * updateQueryStatus(id, QueryStatus.ACCEPTED);
+    }
+
+    public static UserQuery selectActiveQuery(int driver) throws SQLException{
+        if(driver < 1) throw new IllegalArgumentException("driver id < 1");
+
+        String selectActive = "SELECT * FROM \"query\" WHERE status IN ('accepted', 'executing') AND \"driver\"=?;";
+        UserQuery activeQuery = UserQuery.EMPTY;
+        try(PreparedStatement st = con.prepareStatement(selectActive)){
+            st.setInt(1, driver);
+            ResultSet rs = st.executeQuery();
+
+            if(rs.next()){
+                activeQuery = extractUserQuery(rs);
+            }
+
+            rs.close();
+            return activeQuery;
         }
     }
 }

@@ -2,13 +2,13 @@ $(document).ready(function addHandler(){
 
 loadUserInformation();
 getRequestHistory();
-	
-addButtonHandlers();
+
+//addButtonHandlers();
 
 });
 
 function addButtonHandlers(){
-    $("#cab").on({click:callCab});
+    //$("#cab").on({click:callCab});
     $(".cancel").on({click:function(){
                         cancelRequest($(this));
                         }
@@ -89,9 +89,10 @@ function displayRequestHistory(data){
         var feedback = data[i].feedback;
         var button = "";
         if(feedback == null) button = status.includes("ACTIVE") ? getButton("cancel") : getButton("feedback");
-        html+= '<tr><td id="queryId" style="display:none">'+data[i].id+"</td><td>"+status + "</td><td>" + hour+":"+minute+":"+second + "</td><td>" + driver+"</td><td>"+ button +"</td></tr>";
+        html += '<tr id="'+data[i].id+'"><td>'+status + "</td><td>" + hour+":"+minute+":"+second + "</td><td>" + driver+"</td><td>"+ button +"</td></tr>";
     }
-    $("#history").html(html+"</table>");
+    html += "</table>";
+    $("#history").html(html);
     addButtonHandlers();
 }
 
@@ -125,7 +126,7 @@ function getButton(text){
 
 
 function cancelRequest(elem){
-    var id = elem.closest("tr").find("td").html();
+    var id = elem.closest("tr").attr("id");
     if(id > 0) {
 
         data = "id="+id;

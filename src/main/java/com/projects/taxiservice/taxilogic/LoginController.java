@@ -49,12 +49,11 @@ public class LoginController {
         else {
             Driver driver = loginDriver(login, password);
             if(driver.getId() > 0) {
-//                String driverSessionKey = req.getSession().getId();
-//                System.out.println(driverSessionKey);
-                //TokenFilter.removeDriverSession(driverSessionKey);
-                //TokenFilter.addDriverSession(driverSessionKey, driver);
+                String secureToken = RandomTokenGen.getSecureToken();
+                if(TokenFilter.isDriverSession(secureToken)) TokenFilter.removeDriverSession(secureToken);
+                TokenFilter.addDriverSession(secureToken, driver);
 
-                return "valid driver";
+                return secureToken;
             }
             else return "wrong driver";
         }

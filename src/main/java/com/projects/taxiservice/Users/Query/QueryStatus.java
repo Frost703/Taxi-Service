@@ -5,6 +5,9 @@ package com.projects.taxiservice.users.query;
  */
 public enum QueryStatus {
     ACTIVE,
-    INACTIVE,
-    EXECUTING
+    ACCEPTED,
+    DISCARDED,
+    EXECUTING,
+    CANCELLED,
+    FINISHED
 }
