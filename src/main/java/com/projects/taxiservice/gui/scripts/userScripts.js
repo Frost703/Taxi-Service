@@ -85,7 +85,9 @@ function displayRequestHistory(data){
         var status = data[i].status;
         var date = data[i].created;
         var hour = date.hour; var minute = date.minute; var second = date.second;
-        var driver = data[i].driver.id;
+        var driver = data[i].driver.name;
+        if(driver == null) driver = "NONE";
+
         var feedback = data[i].feedback;
         var button = "";
         if(feedback == null) button = status.includes("ACTIVE") ? getButton("cancel") : getButton("feedback");
@@ -144,7 +146,7 @@ function cancelRequest(elem){
 }
 
 function leaveFeedback(elem){
-    var id = elem.closest("tr").find("td").html();
+    var id = elem.closest("tr").attr("id");
         if(id > 0) {
             var feedback = prompt("Please leave your feedback", "Great service!");
             if(feedback.length > 0) {
@@ -160,7 +162,7 @@ function leaveFeedback(elem){
                         }
                     });
             }
-            } else alert("Error on cancelling");
+            } else alert("Error on leaving feedback");
 }
 
 //                                        function directCabRequest(){

@@ -1,5 +1,6 @@
 package com.projects.taxiservice.taxilogic;
 
+import com.projects.taxiservice.TaxiService;
 import com.projects.taxiservice.dblogic.dao.DriverDBController;
 import com.projects.taxiservice.dblogic.dao.UserDBController;
 import com.projects.taxiservice.users.customer.User;
@@ -14,6 +15,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by O'Neill on 5/26/2017.
@@ -21,14 +24,12 @@ import java.time.format.DateTimeFormatter;
 @RestController
 @RequestMapping("/register")
 public class RegisterController {
-    private long time = System.currentTimeMillis();
+
+    private static final Logger logger = Logger.getLogger(TaxiService.class.getName());
 
     @CrossOrigin
     @RequestMapping(method = RequestMethod.POST)
     public Object newAccount(HttpServletRequest req){
-        if(System.currentTimeMillis() - time < 2*1000) return null;
-        time = System.currentTimeMillis();
-
         if(req.getParameter("type").equals("user")) return registerUser(req);
         else return registerDriver(req);
     }
@@ -41,12 +42,11 @@ public class RegisterController {
                 .setAddress(req.getParameter("address"));
 
         try{
-            System.out.println("Before user db operation");
             user = UserDBController.insertUser(user);
-            System.out.println("After user db operation");
             if(user.getId() < 1) throw new SQLException("Failed to register new user!");
-        }catch(SQLException e){
-            return "Fail. Exception: " + e.getMessage();
+        }catch(SQLException sqe){
+            logger.log(Level.WARNING, sqe.getMessage(), sqe);
+            return "Fail. Exception: " + sqe.getMessage();
         }
 
         return "success";
@@ -72,8 +72,9 @@ public class RegisterController {
         try{
             driver = DriverDBController.insertDriver(driver);
             if(driver.getId() < 1) throw new SQLException("Failed to register new driver!");
-        }catch(SQLException e){
-            return "Fail. Exception: " + e.getMessage();
+        }catch(SQLException sqe){
+            logger.log(Level.WARNING, sqe.getMessage(), sqe);
+            return "Fail. Exception: " + sqe.getMessage();
         }
         return "success";
     }

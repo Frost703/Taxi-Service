@@ -90,7 +90,7 @@ function finishOrder(){
         $(".activeOrder").attr("id", "0");
 
         var orders = $("#orders").html();
-        $("#orders").html(orders+1);
+        $("#orders").html(Number(orders) + 1);
 
         alert("Finished");
         refreshRate = 5;
@@ -166,6 +166,7 @@ function getActiveOrder(){
                     $("#activeCustomerName").html(data.name);
                     $("#activeCustomerAddress").html(data.address);
                     $("#activeCustomerPhone").html(data.phoneNumber);
+                    $("#activeCustomerAdditionalInformation").html(data.additionalInformation);
                 }
             }
         });

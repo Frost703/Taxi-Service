@@ -1,5 +1,6 @@
 package com.projects.taxiservice.taxilogic;
 
+import com.projects.taxiservice.TaxiService;
 import com.projects.taxiservice.dblogic.dao.UserQueryDBController;
 import com.projects.taxiservice.taxilogic.utilities.TokenFilter;
 import com.projects.taxiservice.users.customer.User;
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by O'Neill on 6/8/2017.
@@ -19,11 +22,16 @@ import java.time.LocalDateTime;
 @RequestMapping("/user")
 public class UserController {
 
+    private static final Logger logger = Logger.getLogger(TaxiService.class.getName());
+
     @CrossOrigin
     @RequestMapping(path = "/call", method = RequestMethod.POST)
     public String userCabRequest(HttpServletRequest req){
         String token = req.getParameter("token");
-        if(!TokenFilter.isUserSession(token)) return "Token not recognized";
+        if(!TokenFilter.isUserSession(token)){
+            logger.log(Level.INFO, "token not recognized: " + token);
+            return "Token not recognized";
+        }
 
         UserQuery query = new UserQuery();
         query.setAdditionalInformation(req.getParameter("info"));
@@ -37,7 +45,7 @@ public class UserController {
 
         try{
             UserQueryDBController.insertFromUserInput(query);
-        } catch(SQLException sqe) { sqe.printStackTrace(); return "SQL Exception"; }
+        } catch(SQLException sqe) { logger.log(Level.WARNING, sqe.getMessage(), sqe); return "SQL Exception"; }
 
         return "successful";
     }
@@ -46,24 +54,28 @@ public class UserController {
     @RequestMapping(path = "/history", method = RequestMethod.GET)
     public Object getUserHistory(@RequestParam(value="token") String token){
         if(!TokenFilter.isUserSession(token)) {
+            logger.log(Level.INFO, "token not recognized: " + token);
             return "Token not recognized";
         }
 
         try {
             User user = TokenFilter.getUser(token);
-            if(user == User.EMPTY) return "Token not recognized";
+            if(user == User.EMPTY) {
+                logger.log(Level.INFO, "token not recognized: " + token);
+                return "Token not recognized";
+            }
 
             UserQuery query = new UserQuery().setCustomer(user);
             return UserQueryDBController.getUserHistory(query);
         } catch (SQLException sqe) {
-            sqe.printStackTrace(); return "SQL Exception"; }
+            logger.log(Level.WARNING, sqe.getMessage(), sqe); return "SQL Exception"; }
     }
 
     @CrossOrigin
     @RequestMapping(path = "/info", method = RequestMethod.GET)
     public Object getUserInformation(@RequestParam(value="token") String token){
         if(!TokenFilter.isUserSession(token)) {
-            System.out.println("INFO token not recognized: " + token);
+            logger.log(Level.INFO, "token not recognized: " + token);
             return "Token not recognized";
         }
 
@@ -77,13 +89,14 @@ public class UserController {
                                 @RequestParam(value = "id") int id){
         if(id < 1) return "Error: id < 1";
         if(!TokenFilter.isUserSession(token)){
+            logger.log(Level.INFO, "token not recognized: " + token);
             return "Token not recognized";
         }
 
         try {
             if (UserQueryDBController.closeQuery(new UserQuery().setId(id), QueryStatus.CANCELLED) > 0) return "success";
             else return "failed";
-        } catch(SQLException sqe) { sqe.printStackTrace(); return "SQL Error"; }
+        } catch(SQLException sqe) { logger.log(Level.WARNING, sqe.getMessage(), sqe); return "SQL Error"; }
     }
 
     @CrossOrigin
@@ -91,16 +104,24 @@ public class UserController {
     public String leaveFeedback(@RequestParam(value = "token") String token,
                                 @RequestParam(value = "id") int id,
                                 @RequestParam(value = "feedback") String feedback){
-        if(id < 1) return "Error: id < 1";
-        if(feedback.length() < 1) return "Error: empty feedback";
+        if(id < 1) {
+            logger.log(Level.INFO, "UserQuery id < 1");
+            return "Error: id < 1";
+        }
+        if(feedback.length() < 1) {
+            logger.log(Level.INFO, "Passed empty feedback");
+            return "Error: empty feedback";
+        }
         if(!TokenFilter.isUserSession(token)){
+            logger.log(Level.INFO, "token not recognized: " + token);
             return "Token not recognized";
+
         }
 
         try {
             if (UserQueryDBController.updateFeedback(new UserQuery().setId(id), feedback) > 0) return "success";
             else return "failed";
-        } catch(SQLException sqe) { sqe.printStackTrace(); return "SQL Error"; }
+        } catch(SQLException sqe) { logger.log(Level.WARNING, sqe.getMessage(), sqe); return "SQL Error"; }
     }
 
     //Not for prototype

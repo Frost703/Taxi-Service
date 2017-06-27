@@ -1,5 +1,6 @@
 package com.projects.taxiservice.taxilogic;
 
+import com.projects.taxiservice.TaxiService;
 import com.projects.taxiservice.dblogic.dao.DriverDBController;
 import com.projects.taxiservice.dblogic.dao.UserDBController;
 import com.projects.taxiservice.taxilogic.utilities.RandomTokenGen;
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -19,19 +22,19 @@ import java.sql.SQLException;
 @RestController
 @RequestMapping("/login")
 public class LoginController {
-    private long time = System.currentTimeMillis();
+    private static final Logger logger = Logger.getLogger(TaxiService.class.getName());
 
     @CrossOrigin
     @RequestMapping(method = RequestMethod.POST)
     public String signIn(HttpServletRequest req, HttpServletResponse resp){
-        if(System.currentTimeMillis() - time < 0.5 * 1000) {
-            return "Requests are too frequent. Pls wait 1 second";
-        }
-        time = System.currentTimeMillis();
-
         String login = req.getParameter("login");
         String password = req.getParameter("password");
         String type = req.getParameter("type");
+
+        if(login.length() < 1 || password.length() < 1 || type.length() < 1) {
+            logger.log(Level.INFO, "One of fields required for login was empty");
+            return "Not enough data. Empty field";
+        }
 
         //add a new user session and valid response
         if(type.equals("user")) {
@@ -41,6 +44,7 @@ public class LoginController {
                 if(TokenFilter.isUserSession(secureToken)) TokenFilter.removeUserSession(secureToken);
                 TokenFilter.addUserSession(secureToken, user);
 
+                logger.log(Level.FINEST, "New user login with id={0} and token={1}", new Object[] {user.getId(), secureToken});
                 return secureToken;
             }
             else return "wrong user";
@@ -53,6 +57,7 @@ public class LoginController {
                 if(TokenFilter.isDriverSession(secureToken)) TokenFilter.removeDriverSession(secureToken);
                 TokenFilter.addDriverSession(secureToken, driver);
 
+                logger.log(Level.FINEST, "New user driver with id={0} and token={1}", new Object[] {driver.getId(), secureToken});
                 return secureToken;
             }
             else return "wrong driver";
@@ -73,7 +78,7 @@ public class LoginController {
                 return user;
             }
         }catch (SQLException sqe) {
-            sqe.printStackTrace();
+            logger.log(Level.WARNING, sqe.getMessage(), sqe);
             return User.EMPTY;
         }
     }
@@ -90,7 +95,7 @@ public class LoginController {
             if(driverStored.getId() < 1) return Driver.EMPTY;
             else return driverStored;
         } catch(SQLException sqe) {
-            sqe.printStackTrace();
+            logger.log(Level.WARNING, sqe.getMessage(), sqe);
             return Driver.EMPTY;
         }
     }

@@ -5,12 +5,13 @@
 	<body>
 		<script src="/My Java Projects/Taxi Service/src/main/java/com/projects/taxiservice/gui/scripts/jQuery-2.1.3.min.js"></script>
 		<script src="/My Java Projects/Taxi Service/src/main/java/com/projects/taxiservice/gui/scripts/driverScripts.js"></script>
-		<div class="header">Hello, <span id="name"></span>. <span id="date"></span>, <u>Today orders:</u><span id="orders"></span></div>
+		<div class="header">Hello, <span id="name"></span>. <span id="date"></span>, <u>Orders finished:</u><span id="orders"></span></div>
 		<table border="1" align="center" width="800px">
 		<tr><td width="30%" class="activeOrder" id="0">Order status: <div id="activeStatus"></div><br>
 				Name of customer: <div id="activeCustomerName"></div><br>
 				Address of customer: <div id="activeCustomerAddress"></div><br>
 				Phone number of customer: <div id="activeCustomerPhone"></div><br>
+				Additional Information: <div id="activeCustomerAdditionalInformation"></div><br>
 				<input type="button" id="onroute" value="On Route" onclick="onRoute()"> <input type="button" id="discard" value="Discard" onclick="discard()"> <input type="button" id="finished" value="Finished" onclick="finishOrder()"></td>
 		<td rowspan="2">
 			<h3>List of available orders:</h3>
