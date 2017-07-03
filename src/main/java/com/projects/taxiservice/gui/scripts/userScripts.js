@@ -91,7 +91,7 @@ function displayRequestHistory(data){
         var feedback = data[i].feedback;
         var button = "";
         if(feedback == null) button = status.includes("ACTIVE") ? getButton("cancel") : getButton("feedback");
-        html += '<tr id="'+data[i].id+'"><td>'+status + "</td><td>" + hour+":"+minute+":"+second + "</td><td>" + driver+"</td><td>"+ button +"</td></tr>";
+        html += '<tr class="orders" id="'+data[i].id+'"><td>'+status + "</td><td>" + hour+":"+minute+":"+second + '</td><td class="driver"><div class="'+ data[i].driver.id+'">' + driver+"</div></td><td>"+ button +"</td></tr>";
     }
     html += "</table>";
     $("#history").html(html);

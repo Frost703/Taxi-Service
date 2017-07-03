@@ -5,6 +5,7 @@
 	<body>
 		<script src="/My Java Projects/Taxi Service/src/main/java/com/projects/taxiservice/gui/scripts/jQuery-2.1.3.min.js"></script>
 		<script src="/My Java Projects/Taxi Service/src/main/java/com/projects/taxiservice/gui/scripts/userScripts.js"></script>
+		<script src="/My Java Projects/Taxi Service/src/main/java/com/projects/taxiservice/gui/scripts/messenger.js"></script>
 		<div>Expandable <input type="button" id="cab" value="Get me a cab!" onclick="callCab()">
 			<div>User input section
 				<table>
@@ -26,7 +27,11 @@
 			<table id="history"></table>
 		</div></td>
 		
-		<td rowspan="2" id="chatWindow">Chat goes here<br>1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10</td>
+		<td rowspan="2" id="chatWindow">
+			Chat goes here<br>
+			<div class="activeChatWindow"></div>
+			<input type="text" alt="Type in Your Message" id="messageInput"><input type="button" value="Send" onclick="sendMessage()"><br>
+		</td>
 		</tr>
 <!--		<tr><td><div>
 			<table id="availableDrivers">

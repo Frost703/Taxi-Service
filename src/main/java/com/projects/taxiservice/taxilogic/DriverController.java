@@ -2,15 +2,18 @@ package com.projects.taxiservice.taxilogic;
 
 import com.projects.taxiservice.TaxiService;
 import com.projects.taxiservice.dblogic.dao.UserQueryDBController;
+import com.projects.taxiservice.taxilogic.utilities.DirectMessenger;
+import com.projects.taxiservice.taxilogic.utilities.MessageStyler;
 import com.projects.taxiservice.taxilogic.utilities.TokenFilter;
+import com.projects.taxiservice.users.customer.User;
 import com.projects.taxiservice.users.drivers.Driver;
 import com.projects.taxiservice.users.query.QueryStatus;
 import com.projects.taxiservice.users.query.UserQuery;
-import com.sun.org.apache.xml.internal.resolver.readers.ExtendedXMLCatalogReader;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
-import java.util.logging.FileHandler;
+import java.util.Collections;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -22,13 +25,14 @@ import java.util.logging.Logger;
 public class DriverController {
 
     private static final Logger logger = Logger.getLogger(TaxiService.class.getName());
+    private final String INVALID_TOKEN = "Token not recognized";
 
     @CrossOrigin
     @RequestMapping(path = "/info", method = RequestMethod.GET)
     public Object getDriverInformation(@RequestParam(value="token") String token){
         if(!TokenFilter.isDriverSession(token)) {
-            logger.log(Level.INFO, "token not recognized: " + token);
-            return "Token not recognized";
+            logger.log(Level.INFO, INVALID_TOKEN + ": " + token);
+            return INVALID_TOKEN;
         }
 
         Driver driver = TokenFilter.getDriver(token);
@@ -43,10 +47,12 @@ public class DriverController {
 
     @CrossOrigin
     @RequestMapping(path = "/status", method = RequestMethod.POST)
-    public Object changeQueryStatus(@RequestParam(value="token") String token, @RequestParam(value="status") String status, @RequestParam(value="id") int id){
+    public Object changeQueryStatus(@RequestParam(value="token") String token,
+                                    @RequestParam(value="status") String status,
+                                    @RequestParam(value="id") int id){
         if(!TokenFilter.isDriverSession(token)) {
-            logger.log(Level.INFO, "token not recognized: " + token);
-            return "Token not recognized";
+            logger.log(Level.INFO, INVALID_TOKEN + ": " + token);
+            return INVALID_TOKEN;
         }
 
         if(id < 1) {
@@ -92,8 +98,8 @@ public class DriverController {
     @RequestMapping(path = "/orders", method = RequestMethod.GET)
     public Object getActiveQueries(@RequestParam(value="token") String token){
         if(!TokenFilter.isDriverSession(token)) {
-            logger.log(Level.INFO, "token not recognized: " + token);
-            return "Token not recognized";
+            logger.log(Level.INFO, INVALID_TOKEN + ": " + token);
+            return INVALID_TOKEN;
         }
 
         try{
@@ -105,8 +111,8 @@ public class DriverController {
     @RequestMapping(path = "/accept", method = RequestMethod.POST)
     public Object acceptUserQuery(@RequestParam(value="token") String token, @RequestParam(value="id") int id){
         if(!TokenFilter.isDriverSession(token)) {
-            logger.log(Level.INFO, "token not recognized: " + token);
-            return "Token not recognized";
+            logger.log(Level.INFO, INVALID_TOKEN + ": " + token);
+            return INVALID_TOKEN;
         }
 
         if(id < 1) {
@@ -136,8 +142,8 @@ public class DriverController {
     @RequestMapping(path = "/active", method = RequestMethod.GET)
     public Object getActiveQuery(@RequestParam(value = "token") String token){
         if(!TokenFilter.isDriverSession(token)) {
-            logger.log(Level.INFO, "token not recognized: " + token);
-            return "Token not recognized";
+            logger.log(Level.INFO, INVALID_TOKEN + ": " + token);
+            return INVALID_TOKEN;
         }
 
         Driver driver = TokenFilter.getDriver(token);

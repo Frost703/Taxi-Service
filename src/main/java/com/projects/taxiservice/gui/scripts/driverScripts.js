@@ -63,6 +63,7 @@ function discard(){
 
     $("#activeStatus").html("");
     $("#activeCustomerName").html("");
+    $("#activeCustomerName").attr("class", "0");
     $("#activeCustomerAddress").html("");
     $("#activeCustomerPhone").html("");
     $(".activeOrder").attr("id", "0");
@@ -85,6 +86,7 @@ function finishOrder(){
 
         $("#activeStatus").html("");
         $("#activeCustomerName").html("");
+        $("#activeCustomerName").attr("class", "0");
         $("#activeCustomerAddress").html("");
         $("#activeCustomerPhone").html("");
         $(".activeOrder").attr("id", "0");
@@ -164,6 +166,7 @@ function getActiveOrder(){
                     $(".activeOrder").attr("id", data.id);
                     $("#activeStatus").html(data.status);
                     $("#activeCustomerName").html(data.name);
+                    $("#activeCustomerName").attr("class", data.user);
                     $("#activeCustomerAddress").html(data.address);
                     $("#activeCustomerPhone").html(data.phoneNumber);
                     $("#activeCustomerAdditionalInformation").html(data.additionalInformation);
@@ -195,4 +198,10 @@ function promptToLogin(){
         emptyStorage();
         window.location = "/My Java Projects/Taxi Service/src/main/java/com/projects/taxiservice/gui/login.html";
     }
+}
+
+function validateInput(string){
+    var symbols = ['#','$','%','^','&','_','/','\\','|','\'',';',':'];
+    for(i=0; i<symbols.length; i++) string = string.replace(symbols[i], "");
+    return string;
 }

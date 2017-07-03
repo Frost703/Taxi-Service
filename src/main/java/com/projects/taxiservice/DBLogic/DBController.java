@@ -23,7 +23,7 @@ public final class DBController {
 
     static{
         try{
-            dbLogHandler = new FileHandler("log.log", false);
+            dbLogHandler = new FileHandler("dao.log", false);
             logger.addHandler(dbLogHandler);
 
             con = DataSourceFactory.getDataSource("postgres").getConnection();

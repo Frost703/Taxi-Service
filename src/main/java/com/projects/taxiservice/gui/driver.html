@@ -5,6 +5,7 @@
 	<body>
 		<script src="/My Java Projects/Taxi Service/src/main/java/com/projects/taxiservice/gui/scripts/jQuery-2.1.3.min.js"></script>
 		<script src="/My Java Projects/Taxi Service/src/main/java/com/projects/taxiservice/gui/scripts/driverScripts.js"></script>
+		<script src="/My Java Projects/Taxi Service/src/main/java/com/projects/taxiservice/gui/scripts/messenger.js"></script>
 		<div class="header">Hello, <span id="name"></span>. <span id="date"></span>, <u>Orders finished:</u><span id="orders"></span></div>
 		<table border="1" align="center" width="800px">
 		<tr><td width="30%" class="activeOrder" id="0">Order status: <div id="activeStatus"></div><br>
@@ -20,28 +21,8 @@
 			</table>
 		</td></tr>
 		<tr><td>Chat window (Fixed size, scrollable)<br>
-				<input type="text" alt="Type in Your Message"><input type="button" value="Send"><br>
-				Chat message here<br>
-				Chat message here<br>
-				Chat message here<br>
-				Chat message here<br>
-				Chat message here<br>
-				Chat message here<br>
-				Chat message here<br>
-				Chat message here<br>
-				Chat message here<br>
-				Chat message here<br>
-				Chat message here<br>
-				Chat message here<br>
-				Chat message here<br>
-				Chat message here<br>
-				Chat message here<br>
-				Chat message here<br>
-				Chat message here<br>
-				Chat message here<br>
-				Chat message here<br>
-				Chat message here<br>
-				Chat message here<br>
+				<div class="activeChatWindow"></div>
+				<input type="text" alt="Type in Your Message" id="messageInput"><input type="button" value="Send" onclick="sendMessage()"><br>
 	</td></tr>
 		</table>
 	</body>
