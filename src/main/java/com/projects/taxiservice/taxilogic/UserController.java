@@ -34,10 +34,7 @@ public class UserController {
     @RequestMapping(path = "/call", method = RequestMethod.POST)
     public String userCabRequest(HttpServletRequest req){
         String token = req.getParameter("token");
-        if(!TokenFilter.isUserSession(token)){
-            logger.log(Level.INFO, INVALID_TOKEN + ": " + token);
-            return INVALID_TOKEN;
-        }
+        if(!isValidUserToken(token)) return INVALID_TOKEN;
 
         UserQuery query = new UserQuery();
         query.setAdditionalInformation(req.getParameter("info"));
@@ -59,10 +56,7 @@ public class UserController {
     @CrossOrigin
     @RequestMapping(path = "/history", method = RequestMethod.GET)
     public Object getUserHistory(@RequestParam(value="token") String token){
-        if(!TokenFilter.isUserSession(token)) {
-            logger.log(Level.INFO, INVALID_TOKEN + ": " + token);
-            return INVALID_TOKEN;
-        }
+        if(!isValidUserToken(token)) return INVALID_TOKEN;
 
         try {
             User user = TokenFilter.getUser(token);
@@ -71,19 +65,28 @@ public class UserController {
                 return INVALID_TOKEN;
             }
 
-            UserQuery query = new UserQuery().setCustomer(user);
-            return UserQueryDBController.getUserHistory(query);
+            List queries = UserQueryDBController.getUserHistory(user);
+            queries.sort((q1, q2) -> getUserQueryWeight((UserQuery)q2) - getUserQueryWeight((UserQuery)q1));
+
+            return queries;
         } catch (SQLException sqe) {
             logger.log(Level.WARNING, sqe.getMessage(), sqe); return "SQL Exception"; }
+    }
+
+    //Used for sorting. Getting status priorities
+    private int getUserQueryWeight(UserQuery query){
+        switch(query.getStatus().toString()){
+            case "ACTIVE": return 1;
+            case "ACCEPTED": return 2;
+            case "EXECUTING": return 3;
+            default: return 0;
+        }
     }
 
     @CrossOrigin
     @RequestMapping(path = "/info", method = RequestMethod.GET)
     public Object getUserInformation(@RequestParam(value="token") String token){
-        if(!TokenFilter.isUserSession(token)) {
-            logger.log(Level.INFO, INVALID_TOKEN + ": " + token);
-            return INVALID_TOKEN;
-        }
+        if(!isValidUserToken(token)) return INVALID_TOKEN;
 
         User user = TokenFilter.getUser(token);
         return new User().setName(user.getName()).setAddress(user.getAddress()).setPhone(user.getPhone());
@@ -94,10 +97,7 @@ public class UserController {
     public String cancelRequest(@RequestParam(value = "token") String token,
                                 @RequestParam(value = "id") int id){
         if(id < 1) return "Error: id < 1";
-        if(!TokenFilter.isUserSession(token)){
-            logger.log(Level.INFO, INVALID_TOKEN + ": " + token);
-            return INVALID_TOKEN;
-        }
+        if(!isValidUserToken(token)) return INVALID_TOKEN;
 
         try {
             if (UserQueryDBController.closeQuery(new UserQuery().setId(id), QueryStatus.CANCELLED) > 0) return "success";
@@ -118,15 +118,21 @@ public class UserController {
             logger.log(Level.INFO, "Passed empty feedback");
             return "Error: empty feedback";
         }
-        if(!TokenFilter.isUserSession(token)){
-            logger.log(Level.INFO, INVALID_TOKEN + ": " + token);
-            return INVALID_TOKEN;
-
-        }
+        if(!isValidUserToken(token)) return INVALID_TOKEN;
 
         try {
             if (UserQueryDBController.updateFeedback(new UserQuery().setId(id), feedback) > 0) return "success";
             else return "failed";
         } catch(SQLException sqe) { logger.log(Level.WARNING, sqe.getMessage(), sqe); return "SQL Error"; }
     }
+
+    private boolean isValidUserToken(String token){
+        if(!TokenFilter.isUserSession(token)){
+            logger.log(Level.INFO, INVALID_TOKEN + ": " + token);
+            return false;
+        }
+
+        return true;
+    }
+
 }

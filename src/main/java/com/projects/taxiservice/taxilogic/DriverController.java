@@ -30,10 +30,7 @@ public class DriverController {
     @CrossOrigin
     @RequestMapping(path = "/info", method = RequestMethod.GET)
     public Object getDriverInformation(@RequestParam(value="token") String token){
-        if(!TokenFilter.isDriverSession(token)) {
-            logger.log(Level.INFO, INVALID_TOKEN + ": " + token);
-            return INVALID_TOKEN;
-        }
+        if(!isValidDriverToken(token)) return INVALID_TOKEN;
 
         Driver driver = TokenFilter.getDriver(token);
 
@@ -50,10 +47,7 @@ public class DriverController {
     public Object changeQueryStatus(@RequestParam(value="token") String token,
                                     @RequestParam(value="status") String status,
                                     @RequestParam(value="id") int id){
-        if(!TokenFilter.isDriverSession(token)) {
-            logger.log(Level.INFO, INVALID_TOKEN + ": " + token);
-            return INVALID_TOKEN;
-        }
+        if(!isValidDriverToken(token)) return INVALID_TOKEN;
 
         if(id < 1) {
             logger.log(Level.INFO, "operation not supported. id=" + id);
@@ -97,10 +91,7 @@ public class DriverController {
     @CrossOrigin
     @RequestMapping(path = "/orders", method = RequestMethod.GET)
     public Object getActiveQueries(@RequestParam(value="token") String token){
-        if(!TokenFilter.isDriverSession(token)) {
-            logger.log(Level.INFO, INVALID_TOKEN + ": " + token);
-            return INVALID_TOKEN;
-        }
+        if(!isValidDriverToken(token)) return INVALID_TOKEN;
 
         try{
             return UserQueryDBController.selectActiveQueries();
@@ -110,10 +101,7 @@ public class DriverController {
     @CrossOrigin
     @RequestMapping(path = "/accept", method = RequestMethod.POST)
     public Object acceptUserQuery(@RequestParam(value="token") String token, @RequestParam(value="id") int id){
-        if(!TokenFilter.isDriverSession(token)) {
-            logger.log(Level.INFO, INVALID_TOKEN + ": " + token);
-            return INVALID_TOKEN;
-        }
+        if(!isValidDriverToken(token)) return INVALID_TOKEN;
 
         if(id < 1) {
             logger.log(Level.INFO, "operation not supported. id=" + id);
@@ -141,15 +129,21 @@ public class DriverController {
     @CrossOrigin
     @RequestMapping(path = "/active", method = RequestMethod.GET)
     public Object getActiveQuery(@RequestParam(value = "token") String token){
-        if(!TokenFilter.isDriverSession(token)) {
-            logger.log(Level.INFO, INVALID_TOKEN + ": " + token);
-            return INVALID_TOKEN;
-        }
+        if(!isValidDriverToken(token)) return INVALID_TOKEN;
 
         Driver driver = TokenFilter.getDriver(token);
 
         try{
             return UserQueryDBController.selectActiveQuery(driver.getId());
         } catch(SQLException sqe) { logger.log(Level.WARNING, sqe.getMessage(), sqe); return "SQL Exception"; }
+    }
+
+    private boolean isValidDriverToken(String token){
+        if(!TokenFilter.isDriverSession(token)){
+            logger.log(Level.INFO, INVALID_TOKEN + ": " + token);
+            return false;
+        }
+
+        return true;
     }
 }

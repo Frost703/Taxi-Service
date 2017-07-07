@@ -5,11 +5,10 @@ checkAvailableMessages();
 
 function checkAvailableMessages(){
     getMessages();
-    setTimeout(getMessages, refreshRate*1000);
+    setTimeout(checkAvailableMessages, refreshRate*1000);
 }
 
 function getMessages(){
-alert("Getting messages");
     $.ajax({
         type: "GET",
         url: "http://localhost:8080/messenger/message",
@@ -44,10 +43,8 @@ function displayMessage(message){
 function sendMessage(){
     var id = 0;
 
-    id = $("#activeCustomerName").attr("class");
-    alert("Id after #activeCustomerName = " + id);
-    if(window.location.href.includes("user")) id = $("#history").closest("tr").find(".driver").find("div").attr("class");
-
+    if(window.location.href.includes("user")) id = $("#driverId").val();
+    else id = $("#activeUserId").val();
     var message = validateInput($("#messageInput").val());
 
     var data = "receiver="+id+"&message="+message;
@@ -57,7 +54,6 @@ function sendMessage(){
         data: data+"&token="+localStorage.getItem("token"),
         success: function(data){
             if(isValidToken(data)) {
-                alert(data);
                 displayMessage(data);
             }
         }

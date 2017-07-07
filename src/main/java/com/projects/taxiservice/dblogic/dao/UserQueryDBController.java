@@ -35,8 +35,8 @@ public final class UserQueryDBController {
         con = connection;
     }
 
-    public static synchronized List<UserQuery> getUserHistory(UserQuery query) throws SQLException{
-        int id = query.getCustomer().getId();
+    public static synchronized List<UserQuery> getUserHistory(User user) throws SQLException{
+        int id = user.getId();
         if(id < 1) {
             logger.log(Level.WARNING, "Passed a UserQuery object with user.id < 1");
             throw new IllegalArgumentException("User's id < 1");

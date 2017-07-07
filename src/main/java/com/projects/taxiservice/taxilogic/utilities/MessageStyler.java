@@ -11,19 +11,27 @@ public class MessageStyler {
         if(senderName == null || senderName.length() < 1) throw new IllegalArgumentException("Sender is empty");
 
         LocalDateTime now = LocalDateTime.now();
-        StringBuilder builder = new StringBuilder();
+        StringBuilder messageBuilder = new StringBuilder();
         //set server date
 //        builder.append(now.getDayOfYear()).append(".")
 //                .append(now.getMonth()).append(".")
 //                .append(now.getDayOfMonth()).append(" ");
 
-        builder.append(senderName).append(" ");
+        messageBuilder.append(senderName).append(" ");
 
         //set server time
-        builder.append(now.getHour()).append(":")
-                .append(now.getMinute()).append(System.lineSeparator());
+        String hour = ""+now.getHour();
+        String minute = ""+now.getMinute();
 
-        builder.append(message);
-        return builder.toString();
+        messageBuilder.append(convertSingleDigitTime(hour)).append(":")
+                .append(convertSingleDigitTime(hour)).append(System.lineSeparator());
+
+        messageBuilder.append(message);
+        return messageBuilder.toString();
+    }
+
+    private static String convertSingleDigitTime(String time){
+        if(time.length() > 1) return time;
+        else return "0"+time;
     }
 }

@@ -1,11 +1,16 @@
 $(document).ready(function addHandler(){
 
 loadUserInformation();
-getRequestHistory();
+getRequestHistoryEveryDozenSeconds();
 
 //addButtonHandlers();
 
 });
+
+function getRequestHistoryEveryDozenSeconds(){
+    getRequestHistory();
+    setTimeout(getRequestHistoryEveryDozenSeconds, 12*1000);
+}
 
 function addButtonHandlers(){
     //$("#cab").on({click:callCab});
@@ -91,7 +96,7 @@ function displayRequestHistory(data){
         var feedback = data[i].feedback;
         var button = "";
         if(feedback == null) button = status.includes("ACTIVE") ? getButton("cancel") : getButton("feedback");
-        html += '<tr class="orders" id="'+data[i].id+'"><td>'+status + "</td><td>" + hour+":"+minute+":"+second + '</td><td class="driver"><div class="'+ data[i].driver.id+'">' + driver+"</div></td><td>"+ button +"</td></tr>";
+        html += '<tr class="orders" id="'+data[i].id+'"><td>'+status + "</td><td>" + hour+":"+minute+":"+second + '</td><td class="driver"><div><input id="driverId" type="hidden" value="'+ data[i].driver.id+'">' + driver+"</div></td><td>"+ button +"</td></tr>";
     }
     html += "</table>";
     $("#history").html(html);

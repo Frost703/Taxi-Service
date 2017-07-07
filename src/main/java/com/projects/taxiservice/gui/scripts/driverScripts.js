@@ -2,7 +2,7 @@ $(document).ready(function addHandler(){
 
 loadDriverInformation();
 getActiveOrder();
-getOrders();
+queryOrders();
 
 //addButtonHandlers();
 
@@ -129,8 +129,8 @@ function displayOrders(data){
         var username = data[i].name;
         var phone = data[i].phoneNumber;
 
-        html+='<tr id='+data[i].id+'><td id="#orderDate">'+hour+':'+minute+':'+second+'</td>'+
-                '<td id="customerName">'+username+'</td><td id="customerAddress">'+address+'</td><td id="customerPhone">'+phone+'</td><td><input type="button" value="Take" class="order"></td></tr>\n';
+        html+='<tr id='+data[i].id+'><td class="orderDate">'+hour+':'+minute+':'+second+'</td>'+
+                '<td class="customerName">'+username+'</td><td class="customerAddress">'+address+'</td><td class="customerPhone">'+phone+'</td><td><input type="button" value="Take" class="order"></td></tr>\n';
     }
     return html;
 }
@@ -170,6 +170,7 @@ function getActiveOrder(){
                     $("#activeCustomerAddress").html(data.address);
                     $("#activeCustomerPhone").html(data.phoneNumber);
                     $("#activeCustomerAdditionalInformation").html(data.additionalInformation);
+                    $("#activeUserId").val(data.customer.id);
                 }
             }
         });
