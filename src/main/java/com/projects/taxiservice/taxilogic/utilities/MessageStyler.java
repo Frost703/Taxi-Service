@@ -12,10 +12,6 @@ public class MessageStyler {
 
         LocalDateTime now = LocalDateTime.now();
         StringBuilder messageBuilder = new StringBuilder();
-        //set server date
-//        builder.append(now.getDayOfYear()).append(".")
-//                .append(now.getMonth()).append(".")
-//                .append(now.getDayOfMonth()).append(" ");
 
         messageBuilder.append(senderName).append(" ");
 
@@ -24,7 +20,7 @@ public class MessageStyler {
         String minute = ""+now.getMinute();
 
         messageBuilder.append(convertSingleDigitTime(hour)).append(":")
-                .append(convertSingleDigitTime(hour)).append(System.lineSeparator());
+                .append(convertSingleDigitTime(minute)).append(System.lineSeparator());
 
         messageBuilder.append(message);
         return messageBuilder.toString();

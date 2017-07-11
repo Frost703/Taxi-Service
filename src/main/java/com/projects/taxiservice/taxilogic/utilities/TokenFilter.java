@@ -20,8 +20,8 @@ public final class TokenFilter {
     static {
         Runnable userTask = () -> checkAndRemoveExpiredUserSessions(LocalDateTime.now());
         Runnable driverTask = () -> checkAndRemoveExpiredDriverSessions(LocalDateTime.now());
-        exec.scheduleAtFixedRate(userTask, 0, 5, TimeUnit.SECONDS);
-        exec.scheduleAtFixedRate(driverTask, 0, 5, TimeUnit.SECONDS);
+        exec.scheduleAtFixedRate(userTask, 0, 1, TimeUnit.MINUTES);
+        exec.scheduleAtFixedRate(driverTask, 0, 1, TimeUnit.MINUTES);
     }
 
     private static final int hoursToExpireUserToken = 1;
@@ -60,30 +60,42 @@ public final class TokenFilter {
         else return false;
     }
 
-    public static void addUserSession(String key, User user){
+    public static int addUserSession(String key, User user){
+        if(user == null) throw new IllegalArgumentException("null user");
+        if(key == null || key.length() < 1) throw new IllegalArgumentException("null or empty key");
+
+        if(isUserSession(key)) return 0;
+
         SessionInformation<User> info = new SessionInformation<>();
         info.setObject(user);
         info.setExpirationDate(LocalDateTime.now().plusHours(hoursToExpireUserToken));
 
         userSessions.put(key, info);
+        return 1;
     }
 
-    public static void addDriverSession(String key, Driver driver){
+    public static int addDriverSession(String key, Driver driver){
+        if(driver == null) throw new IllegalArgumentException("null driver");
+        if(key == null || key.length() < 1) throw new IllegalArgumentException("null or empty key");
+
+        if(isDriverSession(key)) return 0;
+
         SessionInformation<Driver> info = new SessionInformation<>();
         info.setObject(driver);
         info.setExpirationDate(LocalDateTime.now().plusHours(hoursToExpireDriverToken));
 
         driverSessions.put(key, info);
+        return 1;
     }
 
-    public static boolean removeDriverSession(String key){
+    public static boolean removeUserSession(String key){
         if(isUserSession(key)) userSessions.remove(key);
         else return false;
 
         return true;
     }
 
-    public static boolean removeUserSession(String key){
+    public static boolean removeDriverSession(String key){
         if(isDriverSession(key)) driverSessions.remove(key);
         else return false;
 
