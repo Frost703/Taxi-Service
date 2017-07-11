@@ -3,6 +3,7 @@ package com.projects.taxiservice.taxilogic;
 import com.projects.taxiservice.TaxiService;
 import com.projects.taxiservice.dblogic.dao.DriverDBController;
 import com.projects.taxiservice.dblogic.dao.UserDBController;
+import com.projects.taxiservice.taxilogic.interfaces.RegisterControllerOperations;
 import com.projects.taxiservice.users.customer.User;
 import com.projects.taxiservice.users.drivers.Car;
 import com.projects.taxiservice.users.drivers.Driver;
@@ -23,7 +24,7 @@ import java.util.logging.Logger;
  */
 @RestController
 @RequestMapping("/register")
-public class RegisterController {
+public class RegisterController implements RegisterControllerOperations {
 
     private static final Logger logger = Logger.getLogger(TaxiService.class.getName());
 

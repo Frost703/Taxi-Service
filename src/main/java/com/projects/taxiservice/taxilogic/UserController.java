@@ -2,12 +2,10 @@ package com.projects.taxiservice.taxilogic;
 
 import com.projects.taxiservice.TaxiService;
 import com.projects.taxiservice.dblogic.dao.UserQueryDBController;
-import com.projects.taxiservice.taxilogic.utilities.DirectMessenger;
-import com.projects.taxiservice.taxilogic.utilities.MessageStyler;
+import com.projects.taxiservice.taxilogic.interfaces.UserControllerOperations;
 import com.projects.taxiservice.taxilogic.utilities.TokenFilter;
 import com.projects.taxiservice.users.customer.User;
 import com.projects.taxiservice.users.drivers.Car;
-import com.projects.taxiservice.users.drivers.Driver;
 import com.projects.taxiservice.users.query.QueryStatus;
 import com.projects.taxiservice.users.query.UserQuery;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,7 +22,7 @@ import java.util.logging.Logger;
  */
 @RestController
 @RequestMapping("/user")
-public class UserController {
+public class UserController implements UserControllerOperations {
 
     private static final Logger logger = Logger.getLogger(TaxiService.class.getName());
     private final String INVALID_TOKEN = "Token not recognized";

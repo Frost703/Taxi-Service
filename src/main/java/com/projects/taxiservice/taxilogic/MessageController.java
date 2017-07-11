@@ -1,5 +1,6 @@
 package com.projects.taxiservice.taxilogic;
 
+import com.projects.taxiservice.taxilogic.interfaces.MessageControllerOperations;
 import com.projects.taxiservice.taxilogic.utilities.DirectMessenger;
 import com.projects.taxiservice.taxilogic.utilities.MessageStyler;
 import com.projects.taxiservice.taxilogic.utilities.TokenFilter;
@@ -15,7 +16,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/messenger")
-public class MessageController {
+public class MessageController implements MessageControllerOperations {
 
     private final String INVALID_TOKEN = "Token not recognized";
 

@@ -3,6 +3,7 @@ package com.projects.taxiservice.taxilogic;
 import com.projects.taxiservice.TaxiService;
 import com.projects.taxiservice.dblogic.dao.DriverDBController;
 import com.projects.taxiservice.dblogic.dao.UserDBController;
+import com.projects.taxiservice.taxilogic.interfaces.LoginControllerOperations;
 import com.projects.taxiservice.taxilogic.utilities.RandomTokenGen;
 import com.projects.taxiservice.taxilogic.utilities.TokenFilter;
 import com.projects.taxiservice.users.customer.User;
@@ -21,7 +22,7 @@ import java.util.logging.Logger;
  */
 @RestController
 @RequestMapping("/login")
-public class LoginController {
+public class LoginController implements LoginControllerOperations {
     private static final Logger logger = Logger.getLogger(TaxiService.class.getName());
 
     @CrossOrigin
