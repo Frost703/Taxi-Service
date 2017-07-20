@@ -21,13 +21,13 @@ import java.util.logging.Logger;
  * Created by O'Neill on 6/8/2017.
  */
 @RestController
+@CrossOrigin
 @RequestMapping("/user")
 public class UserController implements UserControllerOperations {
 
     private static final Logger logger = Logger.getLogger(TaxiService.class.getName());
     private final String INVALID_TOKEN = "Token not recognized";
 
-    @CrossOrigin
     @RequestMapping(path = "/call", method = RequestMethod.POST)
     public String userCabRequest(HttpServletRequest req){
         String token = req.getParameter("token");
@@ -50,7 +50,6 @@ public class UserController implements UserControllerOperations {
         return "successful";
     }
 
-    @CrossOrigin
     @RequestMapping(path = "/history", method = RequestMethod.GET)
     public Object getUserHistory(@RequestParam(value="token") String token){
         if(!isValidUserToken(token)) return INVALID_TOKEN;
@@ -80,7 +79,6 @@ public class UserController implements UserControllerOperations {
         }
     }
 
-    @CrossOrigin
     @RequestMapping(path = "/info", method = RequestMethod.GET)
     public Object getUserInformation(@RequestParam(value="token") String token){
         if(!isValidUserToken(token)) return INVALID_TOKEN;
@@ -89,7 +87,6 @@ public class UserController implements UserControllerOperations {
         return new User().setName(user.getName()).setAddress(user.getAddress()).setPhone(user.getPhone());
     }
 
-    @CrossOrigin
     @RequestMapping(path = "/cancel", method = RequestMethod.POST)
     public String cancelRequest(@RequestParam(value = "token") String token,
                                 @RequestParam(value = "id") int id){
@@ -102,7 +99,6 @@ public class UserController implements UserControllerOperations {
         } catch(SQLException sqe) { logger.log(Level.WARNING, sqe.getMessage(), sqe); return "SQL Error"; }
     }
 
-    @CrossOrigin
     @RequestMapping(path = "/feedback", method = RequestMethod.POST)
     public String leaveFeedback(@RequestParam(value = "token") String token,
                                 @RequestParam(value = "id") int id,

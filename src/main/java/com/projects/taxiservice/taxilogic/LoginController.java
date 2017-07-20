@@ -21,11 +21,11 @@ import java.util.logging.Logger;
  * Created by O'Neill on 5/24/2017.
  */
 @RestController
+@CrossOrigin
 @RequestMapping("/login")
 public class LoginController implements LoginControllerOperations {
     private static final Logger logger = Logger.getLogger(TaxiService.class.getName());
 
-    @CrossOrigin
     @RequestMapping(method = RequestMethod.POST)
     public String signIn(HttpServletRequest req, HttpServletResponse resp){
         String login = req.getParameter("login");

@@ -5,6 +5,7 @@ import com.projects.taxiservice.users.customer.User;
 import com.projects.taxiservice.users.drivers.Driver;
 import com.sun.org.apache.bcel.internal.generic.DMUL;
 import org.hibernate.event.internal.DefaultMergeEventListener;
+import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -20,7 +21,8 @@ public class DirectMessengerTest {
     private String validMessage = "Valid Message";
     private String invalidMessage = "";
 
-    {
+    @Before
+    private void init() {
         validUser.setId(1);
         validDriver.setId(1);
 

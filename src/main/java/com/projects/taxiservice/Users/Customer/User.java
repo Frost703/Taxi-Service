@@ -3,18 +3,25 @@ package com.projects.taxiservice.users.customer;
 import com.projects.taxiservice.dblogic.DBManageable;
 import com.projects.taxiservice.users.query.UserQuery;
 
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by O'Neill on 5/15/2017.
  */
+@Entity
+@Table(name = "users")
 public class User implements DBManageable {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO )
     private int id;
     private String login, password, name, phone, address;
+    @Transient
     private List<UserQuery> queries = new ArrayList<UserQuery>();
+    @Transient
     private UserQuery activeQuery;
-
+    @Transient
     public static final User EMPTY = new User().setId(-1);
 
     public int getId() {

@@ -15,12 +15,12 @@ import java.util.List;
  * Created by O'Neill on 7/3/2017.
  */
 @RestController
+@CrossOrigin
 @RequestMapping("/messenger")
 public class MessageController implements MessageControllerOperations {
 
     private final String INVALID_TOKEN = "Token not recognized";
 
-    @CrossOrigin
     @RequestMapping(path = "/message", method = RequestMethod.POST)
     public Object sendMessage(@RequestParam String token,
                               @RequestParam String message,
@@ -33,7 +33,6 @@ public class MessageController implements MessageControllerOperations {
         else return INVALID_TOKEN;
     }
 
-    @CrossOrigin
     @RequestMapping(path = "/message", method = RequestMethod.GET)
     public Object getMessages(@RequestParam String token){
         if(TokenFilter.isUserSession(token)) return getUserMessages(token);

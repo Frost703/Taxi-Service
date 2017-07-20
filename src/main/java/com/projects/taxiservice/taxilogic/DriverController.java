@@ -17,13 +17,13 @@ import java.util.logging.Logger;
  * Created by O'Neill on 6/20/2017.
  */
 @RestController
+@CrossOrigin
 @RequestMapping("/driver")
 public class DriverController implements DriverControllerOperations {
 
     private static final Logger logger = Logger.getLogger(TaxiService.class.getName());
     private final String INVALID_TOKEN = "Token not recognized";
 
-    @CrossOrigin
     @RequestMapping(path = "/info", method = RequestMethod.GET)
     public Object getDriverInformation(@RequestParam(value="token") String token){
         if(!isValidDriverToken(token)) return INVALID_TOKEN;
@@ -38,7 +38,6 @@ public class DriverController implements DriverControllerOperations {
         return "{\"name\":\""+ driver.getName() +"\", \"orders\":"+ orders +"}";
     }
 
-    @CrossOrigin
     @RequestMapping(path = "/status", method = RequestMethod.POST)
     public Object changeQueryStatus(@RequestParam(value="token") String token,
                                     @RequestParam(value="status") String status,
@@ -84,7 +83,6 @@ public class DriverController implements DriverControllerOperations {
         return "success";
     }
 
-    @CrossOrigin
     @RequestMapping(path = "/orders", method = RequestMethod.GET)
     public Object getActiveQueries(@RequestParam(value="token") String token){
         if(!isValidDriverToken(token)) return INVALID_TOKEN;
@@ -94,7 +92,6 @@ public class DriverController implements DriverControllerOperations {
         } catch(SQLException sqe) { logger.log(Level.WARNING, sqe.getMessage(), sqe); return "SQL Exception"; }
     }
 
-    @CrossOrigin
     @RequestMapping(path = "/accept", method = RequestMethod.POST)
     public Object acceptUserQuery(@RequestParam(value="token") String token, @RequestParam(value="id") int id){
         if(!isValidDriverToken(token)) return INVALID_TOKEN;
@@ -122,7 +119,6 @@ public class DriverController implements DriverControllerOperations {
         return "success";
     }
 
-    @CrossOrigin
     @RequestMapping(path = "/active", method = RequestMethod.GET)
     public Object getActiveQuery(@RequestParam(value = "token") String token){
         if(!isValidDriverToken(token)) return INVALID_TOKEN;

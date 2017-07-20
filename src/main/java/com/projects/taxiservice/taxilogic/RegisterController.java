@@ -23,12 +23,12 @@ import java.util.logging.Logger;
  * Created by O'Neill on 5/26/2017.
  */
 @RestController
+@CrossOrigin
 @RequestMapping("/register")
 public class RegisterController implements RegisterControllerOperations {
 
     private static final Logger logger = Logger.getLogger(TaxiService.class.getName());
 
-    @CrossOrigin
     @RequestMapping(method = RequestMethod.POST)
     public Object newAccount(HttpServletRequest req){
         if(req.getParameter("type").equals("user")) return registerUser(req);

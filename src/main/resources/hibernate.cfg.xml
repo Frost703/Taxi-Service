@@ -18,7 +18,7 @@
                     <property name="connection.url">jdbc:hsqldb:hsql://localhost/TestDB</property> -->
 
         <property name="connection.driver_class">org.postgresql.Driver</property>
-        <property name="connection.url">jdbc:postgresql://localhost:5432/DriverDB</property>
+        <property name="connection.url">jdbc:postgresql://localhost:5432/postgres</property>
         <property name="connection.username">postgres</property>
         <property name="connection.password">15987410</property>
 
@@ -37,13 +37,15 @@
         <property name="cache.use_query_cache">false</property>
         <property name="cache.use_second_level_cache">false</property>
         <property name="cache.use_structured_entries">true</property>
+
         <!--<property name="cache.region.factory_class">org.hibernate.cache.jcache.JCacheRegionFactory</property> -->
         <property name="net.sf.ehcache.configurationResourceName">/hibernate-config/ehcache.xml</property>
+
         <!-- Echo all executed SQL to stdout -->
         <property name="show_sql">true</property>
 
 
-        <mapping class="com.projects.taxiservice.users.drivers.Driver"/>
+        <mapping class="com.projects.taxiservice.users.customer.User"/>
 
     </session-factory>
 
