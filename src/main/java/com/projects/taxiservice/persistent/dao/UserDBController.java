@@ -1,15 +1,12 @@
-package com.projects.taxiservice.dblogic.dao;
+package com.projects.taxiservice.persistent.dao;
 
-import com.projects.taxiservice.dblogic.DBController;
-import com.projects.taxiservice.users.customer.User;
-import com.projects.taxiservice.users.query.UserQuery;
+import com.projects.taxiservice.persistent.DBController;
+import com.projects.taxiservice.model.users.User;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

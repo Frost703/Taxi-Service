@@ -1,11 +1,11 @@
-package com.projects.taxiservice.dblogic.dao;
+package com.projects.taxiservice.persistent.dao;
 
-import com.projects.taxiservice.dblogic.DBController;
-import com.projects.taxiservice.users.customer.User;
-import com.projects.taxiservice.users.drivers.CarClass;
-import com.projects.taxiservice.users.drivers.Driver;
-import com.projects.taxiservice.users.query.QueryStatus;
-import com.projects.taxiservice.users.query.UserQuery;
+import com.projects.taxiservice.persistent.DBController;
+import com.projects.taxiservice.model.users.User;
+import com.projects.taxiservice.model.taxi.CarClass;
+import com.projects.taxiservice.model.taxi.Driver;
+import com.projects.taxiservice.model.queries.QueryStatus;
+import com.projects.taxiservice.model.queries.UserQuery;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -42,7 +42,7 @@ public final class UserQueryDBController {
             throw new IllegalArgumentException("User's id < 1");
         }
 
-        String selectLastQueries = "SELECT * FROM \"query\" WHERE \"user\"=? ORDER BY id DESC LIMIT 4;";
+        String selectLastQueries = "SELECT * FROM \"queries\" WHERE \"user\"=? ORDER BY id DESC LIMIT 4;";
         List<UserQuery> queries = new ArrayList<>(5);
 
         try(PreparedStatement st = con.prepareStatement(selectLastQueries)){
@@ -62,9 +62,9 @@ public final class UserQueryDBController {
     public static synchronized int insertFromUserInput(UserQuery query) throws SQLException{
         if(query == null) {
             logger.log(Level.WARNING, "Passed null UserQuery object");
-            throw new IllegalArgumentException("Can't insert a null query.");
+            throw new IllegalArgumentException("Can't insert a null queries.");
         }
-        String insertQuery = "INSERT INTO \"query\" " +
+        String insertQuery = "INSERT INTO \"queries\" " +
                 "(additional, address, carclass, created, feedback, phone, status, \"user\", username) " +
                 "VALUES (?,?,?,?,?,?,?,?,?);";
 
@@ -86,9 +86,9 @@ public final class UserQueryDBController {
     public static synchronized int insertQuery(UserQuery query) throws SQLException{
         if(query == null) {
             logger.log(Level.WARNING, "Passed null UserQuery object");
-            throw new IllegalArgumentException("Can't insert a null query.");
+            throw new IllegalArgumentException("Can't insert a null queries.");
         }
-        String insertQuery = "INSERT INTO \"query\" " +
+        String insertQuery = "INSERT INTO \"queries\" " +
                 "(activated, additional, address, carclass, closed, created, \"driver\", feedback, phone, status, \"user\", username) " +
                 "VALUES (?,?,?,?,?,?,?,?,?,?,?,?);";
 
@@ -114,10 +114,10 @@ public final class UserQueryDBController {
         int id = query.getId();
         if(id < 1) {
             logger.log(Level.WARNING, "Passed a UserQuery object with user.id < 1");
-            throw new IllegalArgumentException("query id < 1");
+            throw new IllegalArgumentException("queries id < 1");
         }
 
-        String update = "UPDATE \"query\" SET status=?, closed=? WHERE id=?";
+        String update = "UPDATE \"queries\" SET status=?, closed=? WHERE id=?";
         try(PreparedStatement st = con.prepareStatement(update)){
             st.setString(1, status.toString().toLowerCase());
             st.setTimestamp(2, Timestamp.valueOf(LocalDateTime.now()));
@@ -134,7 +134,7 @@ public final class UserQueryDBController {
             throw new IllegalArgumentException("id < 1");
         }
 
-        String update = "UPDATE \"query\" SET feedback=? WHERE id=?";
+        String update = "UPDATE \"queries\" SET feedback=? WHERE id=?";
         try(PreparedStatement st = con.prepareStatement(update)){
             st.setString(1, feedback);
             st.setInt(2, id);
@@ -149,7 +149,7 @@ public final class UserQueryDBController {
             throw new IllegalArgumentException("id < 1");
         }
 
-        String getTodayOrderCount = "SELECT COUNT(*) FROM \"query\" WHERE \"driver\"=? AND status=?;";
+        String getTodayOrderCount = "SELECT COUNT(*) FROM \"queries\" WHERE \"driver\"=? AND status=?;";
         int result = 0;
         try(PreparedStatement st = con.prepareStatement(getTodayOrderCount)){
             st.setInt(1, driverId);
@@ -169,7 +169,7 @@ public final class UserQueryDBController {
         if(id < 1) throw new IllegalArgumentException("id < 1");
 
         UserQuery output = UserQuery.EMPTY;
-        String select = "SELECT * FROM \"query\" WHERE id=?;";
+        String select = "SELECT * FROM \"queries\" WHERE id=?;";
         try(PreparedStatement st = con.prepareStatement(select)){
             st.setInt(1, id);
             ResultSet rs = st.executeQuery();
@@ -188,7 +188,7 @@ public final class UserQueryDBController {
             throw new IllegalArgumentException("id < 1");
         }
 
-        String updateStatus = "UPDATE \"query\" SET status=? WHERE id=?;";
+        String updateStatus = "UPDATE \"queries\" SET status=? WHERE id=?;";
         try(PreparedStatement st = con.prepareStatement(updateStatus)){
             st.setString(1, activeStatus.toString().toLowerCase());
             st.setInt(2, id);
@@ -198,7 +198,7 @@ public final class UserQueryDBController {
     }
 
     public static synchronized List<UserQuery> selectActiveQueries() throws SQLException{
-        String selectActive = "SELECT * FROM \"query\" WHERE status='active'";
+        String selectActive = "SELECT * FROM \"queries\" WHERE status='active'";
         try(PreparedStatement st = con.prepareStatement(selectActive);
             ResultSet rs = st.executeQuery()){
 
@@ -257,7 +257,7 @@ public final class UserQueryDBController {
             throw new IllegalArgumentException("driver id < 1");
         }
 
-        String updateDriver = "UPDATE \"query\" SET \"driver\"=? WHERE id=?;";
+        String updateDriver = "UPDATE \"queries\" SET \"driver\"=? WHERE id=?;";
         int result = 1;
         try(PreparedStatement st = con.prepareStatement(updateDriver)){
             st.setInt(1, driver);
@@ -272,7 +272,7 @@ public final class UserQueryDBController {
     public static synchronized UserQuery selectActiveQuery(int driver) throws SQLException{
         if(driver < 1) throw new IllegalArgumentException("driver id < 1");
 
-        String selectActive = "SELECT * FROM \"query\" WHERE status IN ('accepted', 'executing') AND \"driver\"=?;";
+        String selectActive = "SELECT * FROM \"queries\" WHERE status IN ('accepted', 'executing') AND \"driver\"=?;";
         UserQuery activeQuery = UserQuery.EMPTY;
         try(PreparedStatement st = con.prepareStatement(selectActive)){
             st.setInt(1, driver);

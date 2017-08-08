@@ -1,4 +1,4 @@
-package com.projects.taxiservice.users.drivers;
+package com.projects.taxiservice.model.taxi;
 
 /**
  * Created by O'Neill on 6/30/2016.

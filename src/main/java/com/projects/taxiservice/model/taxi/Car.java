@@ -1,4 +1,4 @@
-package com.projects.taxiservice.users.drivers;
+package com.projects.taxiservice.model.taxi;
 
 
 /**

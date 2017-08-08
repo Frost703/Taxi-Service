@@ -1,6 +1,6 @@
 package dblogictests;
 
-import com.projects.taxiservice.dblogic.DBController;
+import com.projects.taxiservice.persistent.DBController;
 import org.junit.Test;
 import static org.junit.Assert.*;
 

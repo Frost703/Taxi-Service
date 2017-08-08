@@ -1,13 +1,10 @@
-package com.projects.taxiservice.dblogic.dao;
+package com.projects.taxiservice.persistent.dao;
 
-import com.projects.taxiservice.dblogic.DBController;
-import com.projects.taxiservice.users.drivers.Car;
-import com.projects.taxiservice.users.drivers.CarClass;
-import com.projects.taxiservice.users.drivers.Driver;
+import com.projects.taxiservice.persistent.DBController;
+import com.projects.taxiservice.model.taxi.Car;
+import com.projects.taxiservice.model.taxi.Driver;
 
 import java.sql.*;
-import java.util.Arrays;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

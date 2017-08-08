@@ -1,9 +1,9 @@
-package com.projects.taxiservice.users.query;
+package com.projects.taxiservice.model.queries;
 
-import com.projects.taxiservice.dblogic.DBManageable;
-import com.projects.taxiservice.users.customer.User;
-import com.projects.taxiservice.users.drivers.CarClass;
-import com.projects.taxiservice.users.drivers.Driver;
+import com.projects.taxiservice.persistent.DBManageable;
+import com.projects.taxiservice.model.users.User;
+import com.projects.taxiservice.model.taxi.CarClass;
+import com.projects.taxiservice.model.taxi.Driver;
 
 import java.time.LocalDateTime;
 

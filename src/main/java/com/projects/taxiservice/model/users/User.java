@@ -1,7 +1,7 @@
-package com.projects.taxiservice.users.customer;
+package com.projects.taxiservice.model.users;
 
-import com.projects.taxiservice.dblogic.DBManageable;
-import com.projects.taxiservice.users.query.UserQuery;
+import com.projects.taxiservice.persistent.DBManageable;
+import com.projects.taxiservice.model.queries.UserQuery;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -11,7 +11,7 @@ import java.util.List;
  * Created by O'Neill on 5/15/2017.
  */
 @Entity
-@Table(name = "users")
+@Table(name = "model")
 public class User implements DBManageable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO )

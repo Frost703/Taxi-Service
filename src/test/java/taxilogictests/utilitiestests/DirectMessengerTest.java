@@ -1,10 +1,8 @@
 package taxilogictests.utilitiestests;
 
 import com.projects.taxiservice.taxilogic.utilities.DirectMessenger;
-import com.projects.taxiservice.users.customer.User;
-import com.projects.taxiservice.users.drivers.Driver;
-import com.sun.org.apache.bcel.internal.generic.DMUL;
-import org.hibernate.event.internal.DefaultMergeEventListener;
+import com.projects.taxiservice.model.users.User;
+import com.projects.taxiservice.model.taxi.Driver;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;

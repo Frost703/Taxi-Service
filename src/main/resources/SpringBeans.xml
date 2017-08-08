@@ -3,13 +3,13 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
 	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
-    <bean id = "driver" class = "com.projects.taxiservice.users.drivers.Driver" scope = "prototype">
+    <bean id = "driver" class = "com.projects.taxiservice.model.drivers.Driver" scope = "prototype">
       <!--  <property name="car">
-            <bean class = "com.projects.taxiservice.users.drivers.Car" scope = "prototype"/>
+            <bean class = "com.projects.taxiservice.model.drivers.Car" scope = "prototype"/>
         </property>
         -->
     </bean>
-    <bean id = "userQuery" class = "com.projects.taxiservice.users.query.UserQuery" scope="prototype">
+    <bean id = "userQuery" class = "com.projects.taxiservice.model.queries.UserQuery" scope="prototype">
 
     </bean>
 

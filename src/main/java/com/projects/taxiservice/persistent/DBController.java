@@ -1,4 +1,4 @@
-package com.projects.taxiservice.dblogic;
+package com.projects.taxiservice.persistent;
 
 import java.sql.Connection;
 import java.util.logging.FileHandler;

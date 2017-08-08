@@ -1,12 +1,12 @@
 package com.projects.taxiservice.taxilogic;
 
 import com.projects.taxiservice.TaxiService;
-import com.projects.taxiservice.dblogic.dao.UserQueryDBController;
+import com.projects.taxiservice.persistent.dao.UserQueryDBController;
 import com.projects.taxiservice.taxilogic.interfaces.DriverControllerOperations;
 import com.projects.taxiservice.taxilogic.utilities.TokenFilter;
-import com.projects.taxiservice.users.drivers.Driver;
-import com.projects.taxiservice.users.query.QueryStatus;
-import com.projects.taxiservice.users.query.UserQuery;
+import com.projects.taxiservice.model.taxi.Driver;
+import com.projects.taxiservice.model.queries.QueryStatus;
+import com.projects.taxiservice.model.queries.UserQuery;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;

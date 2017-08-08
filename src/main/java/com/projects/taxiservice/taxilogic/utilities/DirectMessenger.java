@@ -1,10 +1,9 @@
 package com.projects.taxiservice.taxilogic.utilities;
 
-import com.projects.taxiservice.users.customer.User;
-import com.projects.taxiservice.users.drivers.Driver;
+import com.projects.taxiservice.model.users.User;
+import com.projects.taxiservice.model.taxi.Driver;
 import redis.clients.jedis.Jedis;
 
-import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 

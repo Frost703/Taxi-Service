@@ -1,4 +1,4 @@
-package com.projects.taxiservice.dblogic;
+package com.projects.taxiservice.persistent;
 
 /**
  * Created by O'Neill on 7/14/2016.

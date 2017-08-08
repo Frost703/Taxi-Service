@@ -1,8 +1,8 @@
 package taxilogictests.utilitiestests;
 
 import com.projects.taxiservice.taxilogic.utilities.TokenFilter;
-import com.projects.taxiservice.users.customer.User;
-import com.projects.taxiservice.users.drivers.Driver;
+import com.projects.taxiservice.model.users.User;
+import com.projects.taxiservice.model.taxi.Driver;
 import org.junit.Test;
 import static org.junit.Assert.*;
 

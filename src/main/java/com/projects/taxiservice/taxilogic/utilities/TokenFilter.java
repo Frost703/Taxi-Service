@@ -1,7 +1,7 @@
 package com.projects.taxiservice.taxilogic.utilities;
 
-import com.projects.taxiservice.users.customer.User;
-import com.projects.taxiservice.users.drivers.Driver;
+import com.projects.taxiservice.model.users.User;
+import com.projects.taxiservice.model.taxi.Driver;
 
 import java.time.LocalDateTime;
 import java.util.*;

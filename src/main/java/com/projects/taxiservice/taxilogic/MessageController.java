@@ -4,8 +4,8 @@ import com.projects.taxiservice.taxilogic.interfaces.MessageControllerOperations
 import com.projects.taxiservice.taxilogic.utilities.DirectMessenger;
 import com.projects.taxiservice.taxilogic.utilities.MessageStyler;
 import com.projects.taxiservice.taxilogic.utilities.TokenFilter;
-import com.projects.taxiservice.users.customer.User;
-import com.projects.taxiservice.users.drivers.Driver;
+import com.projects.taxiservice.model.users.User;
+import com.projects.taxiservice.model.taxi.Driver;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;

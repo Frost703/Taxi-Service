@@ -1,12 +1,12 @@
 package com.projects.taxiservice.taxilogic;
 
 import com.projects.taxiservice.TaxiService;
-import com.projects.taxiservice.dblogic.dao.DriverDBController;
-import com.projects.taxiservice.dblogic.dao.UserDBController;
+import com.projects.taxiservice.persistent.dao.DriverDBController;
+import com.projects.taxiservice.persistent.dao.UserDBController;
 import com.projects.taxiservice.taxilogic.interfaces.RegisterControllerOperations;
-import com.projects.taxiservice.users.customer.User;
-import com.projects.taxiservice.users.drivers.Car;
-import com.projects.taxiservice.users.drivers.Driver;
+import com.projects.taxiservice.model.users.User;
+import com.projects.taxiservice.model.taxi.Car;
+import com.projects.taxiservice.model.taxi.Driver;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
