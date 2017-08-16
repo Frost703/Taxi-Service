@@ -1,15 +1,10 @@
 package com.projects.taxiservice.model.taxi;
 
 /**
- * Created by O'Neill on 6/30/2016.
+ * Shows all car types that are available in the system
+ * <code>CarClass</code> is an attribute of <code>Car</code> and is specified by <code>Driver</code>
  */
 
-/*
-ENUM that contains one of three choices of car classes :
-REGULAR - regular sized car(ex. Sedan)
-FAMILYSIZE - bigger car than regular that can host more that 5 people
-VIPCLASS - luxury car with higher conveniences
- */
 public enum CarClass {
     REGULAR,
     FAMILYSIZE,

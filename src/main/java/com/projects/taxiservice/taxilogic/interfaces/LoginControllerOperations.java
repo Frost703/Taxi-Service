@@ -1,11 +1,13 @@
 package com.projects.taxiservice.taxilogic.interfaces;
 
+import org.springframework.http.ResponseEntity;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Created by O'Neill on 7/11/2017.
+ * Shows all operations that can be performed by LoginController
  */
 public interface LoginControllerOperations {
-    public String signIn(HttpServletRequest req, HttpServletResponse resp);
+    ResponseEntity<?> signIn(HttpServletRequest req);
 }

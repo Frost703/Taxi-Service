@@ -1,14 +1,16 @@
 package com.projects.taxiservice.taxilogic.interfaces;
 
+import org.springframework.http.ResponseEntity;
+
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * Created by O'Neill on 7/11/2017.
+ * Shows all operations that can be performed by UserController
  */
 public interface UserControllerOperations {
-    public String userCabRequest(HttpServletRequest req);
-    public Object getUserHistory(String token);
-    public Object getUserInformation(String token);
-    public String cancelRequest(String token, int id);
-    public String leaveFeedback(String token, int id, String feedback);
+    ResponseEntity<?> userCabRequest(HttpServletRequest req);
+    ResponseEntity<?> getUserHistory(String token);
+    ResponseEntity<?> getUserInformation(String token);
+    ResponseEntity<?> cancelRequest(String token, int id);
+    ResponseEntity<?> leaveFeedback(String token, int id, String feedback);
 }

@@ -1,9 +1,11 @@
 package com.projects.taxiservice.taxilogic.interfaces;
 
+import org.springframework.http.ResponseEntity;
+
 /**
- * Created by O'Neill on 7/11/2017.
+ * Shows all operations that can be performed by MessageController
  */
 public interface MessageControllerOperations {
-    public Object sendMessage(String token, String message, int receiver);
-    public Object getMessages(String token);
+    ResponseEntity<?> sendMessage(String token, String message, int receiver);
+    ResponseEntity<?> getMessages(String token);
 }

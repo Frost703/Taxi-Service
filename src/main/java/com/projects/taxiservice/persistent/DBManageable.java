@@ -1,7 +1,7 @@
 package com.projects.taxiservice.persistent;
 
 /**
- * Created by O'Neill on 7/14/2016.
+ * A interface marker. Meant to mark all classes that can be stored in database
  */
 public interface DBManageable {
 

@@ -1,36 +1,28 @@
 package com.projects.taxiservice.persistent.dao;
 
-import com.projects.taxiservice.persistent.DBController;
 import com.projects.taxiservice.model.users.User;
+import com.projects.taxiservice.persistent.DBController;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Created by O'Neill on 5/16/2017.
+ * Performs database operations on <code>User</code> object
  */
 public final class UserDBController {
-    private static Connection con;
-    private static final Logger logger = Logger.getLogger(DBController.class.getName());
-
-    static{
-        setConnection(DBController.getConnection());
-    }
-
-    public static synchronized void setConnection(Connection connection){
-        if(connection == null) {
-            logger.log(Level.SEVERE, "Passed a null connection to setConnection() method");
-            throw new IllegalArgumentException("Connection object cannot be null!");
-        }
-        con = connection;
-    }
+    private static final Logger logger = Logger.getLogger(UserDBController.class.getName());
 
     private UserDBController() {}
 
+    /**
+     * Inserts <code>User</code> object into database
+     *
+     * @param user must have login, password, name specified
+     * @return a <code>User</code> object with it's index in database
+     * @exception IllegalArgumentException if no password or login or name is specified in user
+     * @exception SQLException on sql exception
+     */
     public static synchronized User insertUser(User user) throws SQLException{
         String insertOperation = "INSERT INTO \"users\" " +
                 "(login, password, phone, name, address) VALUES " +
@@ -55,7 +47,8 @@ public final class UserDBController {
             throw new IllegalArgumentException("User name cannot be empty");
         }
 
-        try(PreparedStatement st = con.prepareStatement(insertOperation)) {
+        try(Connection con = DBController.getConnection();
+            PreparedStatement st = con.prepareStatement(insertOperation, Statement.RETURN_GENERATED_KEYS)) {
             st.setString(1, user.getLogin().toLowerCase());
             st.setString(2, user.getPassword());
             st.setString(4, user.getName());
@@ -66,11 +59,22 @@ public final class UserDBController {
             if (user.getAddress() == null || user.getAddress().length() < 3) st.setString(5, null);
             else st.setString(5, user.getAddress());
 
-            st.executeUpdate();
-
-            user = selectUser(user.setId(-1));
-            if (user.getId() < 0) {
+            int result = st.executeUpdate();
+            if(result < 1){
+                logger.log(Level.WARNING, "Failed to insert a user to DB with login={0}", user.getLogin());
                 throw new SQLException("Failed to insert a user to DB");
+            }
+            else{
+                ResultSet rs = st.getGeneratedKeys();
+                if(rs.next()){
+                    int userId = rs.getInt(1);
+                    if(userId < 1){
+                        logger.log(Level.WARNING, "Failed to insert a user to DB with login={0}", user.getLogin());
+                        throw new SQLException("Failed to insert a user to DB");
+                    }
+
+                    user.setId(userId);
+                }
             }
         }
 
@@ -78,6 +82,14 @@ public final class UserDBController {
         return user;
     }
 
+    /**
+     * Selects <code>User</code> object from database
+     *
+     * @param user must have id or login
+     * @return a new <code>User</code> object with all information that is stored in database
+     * @exception IllegalArgumentException if no id or login is specified in user
+     * @exception SQLException on sql exception
+     */
     public static synchronized User selectUser(User user) throws SQLException{
         if (user == null) {
             logger.log(Level.WARNING, "Passed null User object");
@@ -89,28 +101,32 @@ public final class UserDBController {
         }
 
         String selectUser = "SELECT * FROM \"users\" WHERE ";
-        ResultSet rs = null;
-        PreparedStatement st = null;
+        boolean idAvailable;
 
         if (user.getId() > 0) {
             selectUser += "id=?;";
-            st = con.prepareStatement(selectUser);
-            st.setInt(1, user.getId());
-        } else {
+            idAvailable = true;
+        }
+        else {
             selectUser += "login=?;";
-            st = con.prepareStatement(selectUser);
-            st.setString(1, user.getLogin().toLowerCase());
+            idAvailable = false;
         }
 
         User userStored = new User();
-        rs = st.executeQuery();
-        while(rs.next()){
-            userStored.setId(rs.getInt("id")).setLogin(rs.getString("login")).setName(rs.getString("name"))
-                    .setPhone(rs.getString("phone")).setAddress(rs.getString("address"));
-        }
+        try(Connection con = DBController.getConnection();
+            PreparedStatement st = con.prepareStatement(selectUser)) {
+            if (idAvailable) {
+                st.setInt(1, user.getId());
+            } else {
+                st.setString(1, user.getLogin().toLowerCase());
+            }
 
-        rs.close();
-        st.close();
+            ResultSet rs = st.executeQuery();
+            if (rs.next()) {
+                userStored.setId(rs.getInt("id")).setLogin(rs.getString("login")).setName(rs.getString("name"))
+                        .setPhone(rs.getString("phone")).setAddress(rs.getString("address"));
+            }
+        }
 
         logger.log(Level.FINEST, "Returned an object from DB with id={0}", userStored.getId());
         return userStored;

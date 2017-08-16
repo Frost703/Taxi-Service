@@ -1,17 +1,15 @@
 package com.projects.taxiservice.model.taxi;
 
 
+import com.projects.taxiservice.persistent.DBManageable;
+
 /**
- * Created by O'Neill on 6/30/2016.
+ * This class is a class-helper that represents all information about the car of a <code>Driver</code>
+ * Used only with <code>Driver</code> object
  */
 
-/*
-It's a Car class that is related to the specific driver. This class has fields:
-carNumber - represents the plate number on the car
-carDescription - short and specific description of the car(color, model, special features)
-carClass - one of three classes of cars represented by the firm. Regular, FamilySize, VipClass
- */
-public class Car {
+public class Car implements DBManageable {
+    public static final Car EMPTY = new Car();
     private int id;
     private String carNumber;
     private String carDescription;
@@ -47,14 +45,5 @@ public class Car {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public static CarClass getCarClass(String car){
-        switch(car.toUpperCase()){
-            case "REGULAR" : return CarClass.REGULAR;
-            case "FAMILY" : return CarClass.FAMILYSIZE;
-            case "VIP" : return CarClass.VIPCLASS;
-            default: return CarClass.REGULAR;
-        }
     }
 }

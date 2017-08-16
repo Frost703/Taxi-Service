@@ -8,7 +8,8 @@ import com.projects.taxiservice.model.taxi.Driver;
 import java.time.LocalDateTime;
 
 /**
- * Created by O'Neill on 7/3/2016.
+ * Represents all information that <code>Driver</code> requires to work with <code>User</code>
+ * Also shows the current state of request.
  */
 
 public class UserQuery implements DBManageable {

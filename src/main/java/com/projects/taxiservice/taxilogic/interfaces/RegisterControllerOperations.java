@@ -1,10 +1,12 @@
 package com.projects.taxiservice.taxilogic.interfaces;
 
+import org.springframework.http.ResponseEntity;
+
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * Created by O'Neill on 7/11/2017.
+ * Shows all operations that can be performed by RegisterController
  */
 public interface RegisterControllerOperations {
-    public Object newAccount(HttpServletRequest req);
+    ResponseEntity<?> newAccount(HttpServletRequest req);
 }

@@ -9,14 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by O'Neill on 6/30/2016.
+ * Contains all information about current driver that is required to login and work with users
  */
-
-    /*  @Lob - large object - for objects that are bigger than 255chars
-        @Column (name = "") - to change the column names
-        @Transient - to not save this field to DB
-        @Temporal (TemporalType.Date) - to change the date storing format. f.e. TemporalType.Time - saves only time
-     */
 
 @Entity
 @Table(name = "drivers")

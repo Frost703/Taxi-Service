@@ -2,6 +2,9 @@ package dblogictests;
 
 import com.projects.taxiservice.persistent.DBController;
 import org.junit.Test;
+
+import java.sql.SQLException;
+
 import static org.junit.Assert.*;
 
 /**
@@ -9,7 +12,7 @@ import static org.junit.Assert.*;
  */
 public class DBControllerTest {
     @Test
-    public void testNotNullConnection(){
+    public void testNotNullConnection() throws SQLException{
         assertNotNull(DBController.getConnection());
     }
 }

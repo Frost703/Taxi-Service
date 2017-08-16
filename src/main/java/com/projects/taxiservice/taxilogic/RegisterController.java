@@ -1,12 +1,15 @@
 package com.projects.taxiservice.taxilogic;
 
 import com.projects.taxiservice.TaxiService;
+import com.projects.taxiservice.model.taxi.CarClass;
 import com.projects.taxiservice.persistent.dao.DriverDBController;
 import com.projects.taxiservice.persistent.dao.UserDBController;
 import com.projects.taxiservice.taxilogic.interfaces.RegisterControllerOperations;
 import com.projects.taxiservice.model.users.User;
 import com.projects.taxiservice.model.taxi.Car;
 import com.projects.taxiservice.model.taxi.Driver;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -20,7 +23,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Created by O'Neill on 5/26/2017.
+ * Controls all web requests that come through /register endpoint
  */
 @RestController
 @CrossOrigin
@@ -29,13 +32,25 @@ public class RegisterController implements RegisterControllerOperations {
 
     private static final Logger logger = Logger.getLogger(TaxiService.class.getName());
 
+    /**
+     * Creates a new entity in database according to type of registration (user or driver)
+     *
+     * @param req with all information from user or driver
+     * @return @ref registerUser or @ref registerDriver according to type
+     */
     @RequestMapping(method = RequestMethod.POST)
-    public Object newAccount(HttpServletRequest req){
+    public ResponseEntity<?> newAccount(HttpServletRequest req){
         if(req.getParameter("type").equals("user")) return registerUser(req);
         else return registerDriver(req);
     }
 
-    private String registerUser(HttpServletRequest req){
+    /**
+     * Puts user into a database
+     *
+     * @param req with all information about user
+     * @return 400 status when information is missing. 200 status when successful
+     */
+    private ResponseEntity<?> registerUser(HttpServletRequest req){
         User user = new User();
 
         user.setLogin(req.getParameter("login")).setPassword(req.getParameter("password"))
@@ -44,16 +59,18 @@ public class RegisterController implements RegisterControllerOperations {
 
         try{
             user = UserDBController.insertUser(user);
-            if(user.getId() < 1) throw new SQLException("Failed to register new user!");
+            if(user.getId() < 1) {
+                throw new SQLException("Failed to register new user!");
+            }
         }catch(SQLException sqe){
             logger.log(Level.WARNING, sqe.getMessage(), sqe);
-            return "Fail. Exception: " + sqe.getMessage();
+            return new ResponseEntity<>("Fail. Exception: " + sqe.getMessage(), HttpStatus.BAD_REQUEST);
         }
 
-        return "success";
+        return new ResponseEntity<Object>("success", HttpStatus.OK);
     }
 
-    private String registerDriver(HttpServletRequest req) {
+    private ResponseEntity<?> registerDriver(HttpServletRequest req) {
         Driver driver = new Driver();
 
         driver.setLogin(req.getParameter("login")).setPassword(req.getParameter("password"))
@@ -67,7 +84,7 @@ public class RegisterController implements RegisterControllerOperations {
         car.setCarNumber(req.getParameter("plate"));
 
         String carType = req.getParameter("car");
-        car.setCarClass(Car.getCarClass(carType));
+        car.setCarClass(CarClass.valueOf(carType));
         driver.setCar(car);
 
         try{
@@ -75,8 +92,8 @@ public class RegisterController implements RegisterControllerOperations {
             if(driver.getId() < 1) throw new SQLException("Failed to register new driver!");
         }catch(SQLException sqe){
             logger.log(Level.WARNING, sqe.getMessage(), sqe);
-            return "Fail. Exception: " + sqe.getMessage();
+            return new ResponseEntity<>("Fail. Exception: " + sqe.getMessage(), HttpStatus.BAD_REQUEST);
         }
-        return "success";
+        return new ResponseEntity<Object>("success", HttpStatus.OK);
     }
 }

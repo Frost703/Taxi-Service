@@ -1,12 +1,14 @@
 package com.projects.taxiservice.taxilogic.interfaces;
 
+import org.springframework.http.ResponseEntity;
+
 /**
- * Created by O'Neill on 7/11/2017.
+ * Shows all operations that can be performed by DriverController
  */
 public interface DriverControllerOperations {
-    public Object getDriverInformation(String token);
-    public Object changeQueryStatus(String token, String status, int id);
-    public Object getActiveQueries(String token);
-    public Object acceptUserQuery(String token, int id);
-    public Object getActiveQuery(String token);
+    ResponseEntity<?> getDriverInformation(String token);
+    ResponseEntity<?> changeQueryStatus(String token, String status, int id);
+    ResponseEntity<?> getActiveQueries(String token);
+    ResponseEntity<?> acceptUserQuery(String token, int id);
+    ResponseEntity<?> getActiveQuery(String token);
 }

@@ -15,26 +15,22 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Created by O'Neill on 5/16/2017.
+ * Performs database operations on <code>UserQuery</code> object
  */
 public final class UserQueryDBController {
-    private static Connection con;
-    private static final Logger logger = Logger.getLogger(DBController.class.getName());
-
-    static{
-        setConnection(DBController.getConnection());
-    }
+    private static final Logger logger = Logger.getLogger(UserQueryDBController.class.getName());
 
     private UserQueryDBController() {}
 
-    public static synchronized void setConnection(Connection connection) {
-        if(connection == null) {
-            logger.log(Level.SEVERE, "Passed a null connection to setConnection() method");
-            throw new IllegalArgumentException("Connection object cannot be null!");
-        }
-        con = connection;
-    }
-
+    /**
+     * Selects a list of <code>UserQuery</code> objects from database
+     * <P><B>Note:</B> This method returns only 4 last <code>UserQuery</code> objects submitted by current user</P>
+     *
+     * @param user must have id
+     * @return a new <code>List<UserQuery></code> object with 4 last queries made by current user
+     * @exception IllegalArgumentException if no id is specified in user
+     * @exception SQLException on sql exception
+     */
     public static synchronized List<UserQuery> getUserHistory(User user) throws SQLException{
         int id = user.getId();
         if(id < 1) {
@@ -45,20 +41,27 @@ public final class UserQueryDBController {
         String selectLastQueries = "SELECT * FROM \"queries\" WHERE \"user\"=? ORDER BY id DESC LIMIT 4;";
         List<UserQuery> queries = new ArrayList<>(5);
 
-        try(PreparedStatement st = con.prepareStatement(selectLastQueries)){
+        try(Connection con = DBController.getConnection();
+            PreparedStatement st = con.prepareStatement(selectLastQueries)){
             st.setInt(1, id);
             ResultSet rs = st.executeQuery();
             while(rs.next()){
                 queries.add(extractUserQuery(rs));
             }
-
-            rs.close();
         }
 
         logger.log(Level.FINEST, "Returned userHistory collection from DB with size="+queries.size());
         return queries;
     }
 
+    /**
+     * Inserts <code>UserQuery</code> object into database
+     *
+     * @param query that will be saved
+     * @return a result of current operation (amount of fields changed/added into database)
+     * @exception IllegalArgumentException if query is null
+     * @exception SQLException on sql exception
+     */
     public static synchronized int insertFromUserInput(UserQuery query) throws SQLException{
         if(query == null) {
             logger.log(Level.WARNING, "Passed null UserQuery object");
@@ -68,7 +71,8 @@ public final class UserQueryDBController {
                 "(additional, address, carclass, created, feedback, phone, status, \"user\", username) " +
                 "VALUES (?,?,?,?,?,?,?,?,?);";
 
-        try(PreparedStatement st = con.prepareStatement(insertQuery)){
+        try(Connection con = DBController.getConnection();
+            PreparedStatement st = con.prepareStatement(insertQuery)){
             st.setString(1, query.getAdditionalInformation());
             st.setString(2, query.getAddress());
             st.setString(3, query.getCarClass().toString().toLowerCase());
@@ -79,37 +83,25 @@ public final class UserQueryDBController {
             st.setInt(8, query.getCustomer().getId());
             st.setString(9, query.getName());
 
-            return st.executeUpdate();
+            int result = st.executeUpdate();
+            if(result < 1){
+                logger.log(Level.WARNING, "Failed to insert a new UserQuery to DB. Customer login={0}", query.getCustomer().getLogin());
+                throw new SQLException("Failed to insert a new UserQuery to DB");
+            }
+
+            return result;
         }
     }
 
-    public static synchronized int insertQuery(UserQuery query) throws SQLException{
-        if(query == null) {
-            logger.log(Level.WARNING, "Passed null UserQuery object");
-            throw new IllegalArgumentException("Can't insert a null queries.");
-        }
-        String insertQuery = "INSERT INTO \"queries\" " +
-                "(activated, additional, address, carclass, closed, created, \"driver\", feedback, phone, status, \"user\", username) " +
-                "VALUES (?,?,?,?,?,?,?,?,?,?,?,?);";
-
-        try(PreparedStatement st = con.prepareStatement(insertQuery)){
-            st.setTimestamp(1, Timestamp.valueOf(query.getActivated()));
-            st.setString(2, query.getAdditionalInformation());
-            st.setString(3, query.getAddress());
-            st.setString(4, query.getCarClass().toString().toLowerCase());
-            st.setTimestamp(5, Timestamp.valueOf(query.getClosed()));
-            st.setTimestamp(6, Timestamp.valueOf(query.getCreated()));
-            st.setInt(7, query.getDriver().getId());
-            st.setString(8, query.getFeedback());
-            st.setString(9, query.getPhoneNumber());
-            st.setString(10, query.getStatus().toString().toLowerCase());
-            st.setInt(11, query.getCustomer().getId());
-            st.setString(12, query.getCustomer().getName());
-
-            return st.executeUpdate();
-        }
-    }
-
+    /**
+     * Changes <code>QueryStatus</code> of current <code>UserQuery</code> object in database
+     *
+     * @param query query to be changed
+     * @param status that query will have
+     * @return a result of current operation (amount of fields changed/added into database)
+     * @exception IllegalArgumentException if no id < 1 in query
+     * @exception SQLException on sql exception
+     */
     public static synchronized int closeQuery(UserQuery query, QueryStatus status) throws SQLException{
         int id = query.getId();
         if(id < 1) {
@@ -118,15 +110,31 @@ public final class UserQueryDBController {
         }
 
         String update = "UPDATE \"queries\" SET status=?, closed=? WHERE id=?";
-        try(PreparedStatement st = con.prepareStatement(update)){
+        try(Connection con = DBController.getConnection();
+            PreparedStatement st = con.prepareStatement(update)){
             st.setString(1, status.toString().toLowerCase());
             st.setTimestamp(2, Timestamp.valueOf(LocalDateTime.now()));
             st.setInt(3, id);
 
-            return st.executeUpdate();
+            int result = st.executeUpdate();
+            if(result < 1){
+                logger.log(Level.WARNING, "Failed to insert a new UserQuery to DB. Customer login={0}", query.getCustomer().getLogin());
+                throw new SQLException("Failed to insert a new UserQuery to DB");
+            }
+
+            return result;
         }
     }
 
+    /**
+     * Changes feedback field of current <code>UserQuery</code> object in database
+     *
+     * @param query query to be changed
+     * @param feedback left by user
+     * @return a result of current operation (amount of fields changed/added into database)
+     * @exception IllegalArgumentException if no id < 1 in query
+     * @exception SQLException on sql exception
+     */
     public static synchronized int updateFeedback(UserQuery query, String feedback) throws SQLException{
         int id = query.getId();
         if(id < 1) {
@@ -135,14 +143,29 @@ public final class UserQueryDBController {
         }
 
         String update = "UPDATE \"queries\" SET feedback=? WHERE id=?";
-        try(PreparedStatement st = con.prepareStatement(update)){
+        try(Connection con = DBController.getConnection();
+            PreparedStatement st = con.prepareStatement(update)){
             st.setString(1, feedback);
             st.setInt(2, id);
 
-            return st.executeUpdate();
+            int result = st.executeUpdate();
+            if(result < 1){
+                logger.log(Level.WARNING, "Failed to insert a new UserQuery to DB. Customer login={0}", query.getCustomer().getLogin());
+                throw new SQLException("Failed to insert a new UserQuery to DB");
+            }
+
+            return result;
         }
     }
 
+    /**
+     * Gets amount of <code>UserQuery</code> objects of specified driver with status=finished
+     *
+     * @param driverId id of the driver
+     * @return amount of queries finished by driver
+     * @exception IllegalArgumentException if driverId < 1
+     * @exception SQLException on sql exception
+     */
     public static synchronized int getDriverStatistics(int driverId) throws SQLException{
         if(driverId < 1) {
             logger.log(Level.WARNING, "Passed driverId < 1");
@@ -151,7 +174,8 @@ public final class UserQueryDBController {
 
         String getTodayOrderCount = "SELECT COUNT(*) FROM \"queries\" WHERE \"driver\"=? AND status=?;";
         int result = 0;
-        try(PreparedStatement st = con.prepareStatement(getTodayOrderCount)){
+        try(Connection con = DBController.getConnection();
+            PreparedStatement st = con.prepareStatement(getTodayOrderCount)){
             st.setInt(1, driverId);
             st.setString(2, QueryStatus.FINISHED.toString().toLowerCase());
 
@@ -159,28 +183,47 @@ public final class UserQueryDBController {
             if(rs.next()){
                 result = rs.getInt(1);
             }
-            rs.close();
         }
+
         logger.log(Level.FINEST, "Received a driver statistic with driver id={0} and total finished orders {1}", new Object[]{driverId, result});
         return result;
     }
 
+    /**
+     * Selects <code>UserQuery</code> object from database
+     *
+     * @param id of the query to be selected
+     * @return a new <code>UserQuery</code> object received from database
+     * @exception IllegalArgumentException if id < 1 in query
+     * @exception SQLException on sql exception
+     */
     public static synchronized UserQuery selectQuery(int id) throws SQLException{
         if(id < 1) throw new IllegalArgumentException("id < 1");
 
         UserQuery output = UserQuery.EMPTY;
         String select = "SELECT * FROM \"queries\" WHERE id=?;";
-        try(PreparedStatement st = con.prepareStatement(select)){
+        try(Connection con = DBController.getConnection();
+            PreparedStatement st = con.prepareStatement(select)){
+
             st.setInt(1, id);
             ResultSet rs = st.executeQuery();
             if(rs.next()){
                 output = extractUserQuery(rs);
             }
-            rs.close();
         }
+
         return output;
     }
 
+    /**
+     * Selects <code>UserQuery</code> object from database
+     *
+     * @param query to be changed
+     * @param activeStatus status that query will have
+     * @return a result of current operation (amount of fields changed/added into database)
+     * @exception IllegalArgumentException if id < 1 in query
+     * @exception SQLException on sql exception
+     */
     public static synchronized int updateQueryStatus(UserQuery query, QueryStatus activeStatus) throws SQLException{
         int id = query.getId();
         if(id < 1) {
@@ -189,17 +232,31 @@ public final class UserQueryDBController {
         }
 
         String updateStatus = "UPDATE \"queries\" SET status=? WHERE id=?;";
-        try(PreparedStatement st = con.prepareStatement(updateStatus)){
+        try(Connection con = DBController.getConnection();
+            PreparedStatement st = con.prepareStatement(updateStatus)){
             st.setString(1, activeStatus.toString().toLowerCase());
             st.setInt(2, id);
 
-            return st.executeUpdate();
+            int result = st.executeUpdate();
+            if(result < 1){
+                logger.log(Level.WARNING, "Failed to insert a new UserQuery to DB. Customer login={0}", query.getCustomer().getLogin());
+                throw new SQLException("Failed to insert a new UserQuery to DB");
+            }
+
+            return result;
         }
     }
 
+    /**
+     * Selects list of <code>UserQuery</code> objects from database that have status=active
+     *
+     * @return a <code>List<UserQuery></code> with QueryStatus=ACTIVE
+     * @exception SQLException on sql exception
+     */
     public static synchronized List<UserQuery> selectActiveQueries() throws SQLException{
         String selectActive = "SELECT * FROM \"queries\" WHERE status='active'";
-        try(PreparedStatement st = con.prepareStatement(selectActive);
+        try(Connection con = DBController.getConnection();
+            PreparedStatement st = con.prepareStatement(selectActive);
             ResultSet rs = st.executeQuery()){
 
             ArrayList<UserQuery> activeQueries = new ArrayList<>();
@@ -212,6 +269,13 @@ public final class UserQueryDBController {
         }
     }
 
+    /**
+     * Service method to extract a new <code>UserQuery</code> object from ResultSet
+     *
+     * @param rs contains all information about current UserQuery
+     * @return a new UserQuery
+     * @exception SQLException on sql exception
+     */
     private static synchronized UserQuery extractUserQuery(ResultSet rs) throws SQLException{
         UserQuery selectedQuery = new UserQuery();
 
@@ -234,7 +298,7 @@ public final class UserQueryDBController {
 
         Driver driver = new Driver().setId(rs.getInt("driver"));
         try {
-            if (driver.getId() > 0) driver.setName(DriverDBController.selectDriver(driver).getName());
+            if (driver.getId() > 0) driver = DriverDBController.selectDriver(driver);
         } catch (SQLException sqe) { /*do nothing*/ }
 
         selectedQuery.setDriver(driver);
@@ -246,6 +310,15 @@ public final class UserQueryDBController {
         return selectedQuery;
     }
 
+    /**
+     * Updates driver of <code>UserQuery</code> object in database
+     *
+     * @param query to be changed
+     * @param driver id that query will have
+     * @return a result of current operation (amount of fields changed/added into database)
+     * @exception IllegalArgumentException if id < 1 in query or driver < 1
+     * @exception SQLException on sql exception
+     */
     public static synchronized int updateQueryDriver(UserQuery query, int driver) throws SQLException{
         int id = query.getId();
         if(id < 1) {
@@ -259,7 +332,10 @@ public final class UserQueryDBController {
 
         String updateDriver = "UPDATE \"queries\" SET \"driver\"=? WHERE id=?;";
         int result = 1;
-        try(PreparedStatement st = con.prepareStatement(updateDriver)){
+
+        try(Connection con = DBController.getConnection();
+            PreparedStatement st = con.prepareStatement(updateDriver)){
+
             st.setInt(1, driver);
             st.setInt(2, id);
 
@@ -269,20 +345,29 @@ public final class UserQueryDBController {
         return result * updateQueryStatus(query, QueryStatus.ACCEPTED);
     }
 
+    /**
+     * Selects <code>UserQuery</code> object with status=accepted or status=executing of specified driver from database
+     *
+     * @param driver id
+     * @return a new UserQuery object that relates to specified driver
+     * @exception IllegalArgumentException if driver < 1
+     * @exception SQLException on sql exception
+     */
     public static synchronized UserQuery selectActiveQuery(int driver) throws SQLException{
         if(driver < 1) throw new IllegalArgumentException("driver id < 1");
 
         String selectActive = "SELECT * FROM \"queries\" WHERE status IN ('accepted', 'executing') AND \"driver\"=?;";
         UserQuery activeQuery = UserQuery.EMPTY;
-        try(PreparedStatement st = con.prepareStatement(selectActive)){
+
+        try(Connection con = DBController.getConnection();
+            PreparedStatement st = con.prepareStatement(selectActive)){
+
             st.setInt(1, driver);
             ResultSet rs = st.executeQuery();
 
             if(rs.next()){
                 activeQuery = extractUserQuery(rs);
             }
-
-            rs.close();
 
             logger.log(Level.FINEST, "Received a UserQuery object from DB with driver id={0}", driver);
             return activeQuery;
